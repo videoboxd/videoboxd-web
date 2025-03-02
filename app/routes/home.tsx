@@ -1,3 +1,4 @@
+import ky from 'ky';
 import { Button } from "~/components/ui/button";
 import type { Route } from "./+types/home";
 import { apiUrl } from "~/lib/api";
@@ -18,16 +19,12 @@ type Video = {
 };
 
 // TODO: use ky package
-export async function loader() {
-  const response = await fetch(`${apiUrl}/videos`);
-  const videos: Video[] = await response.json();
-
+export async function loader(): Promise<{ videos: Video[] }> {
+  const videos = await ky.get(`${apiUrl}/videos`).json<Video[]>();
   return { videos };
 }
 
-export default function Home(
-  { loaderData }: Route.ComponentProps
-) {
+export default function Home({ loaderData }: Route.ComponentProps) {
   const { videos } = loaderData;
 
   return (
