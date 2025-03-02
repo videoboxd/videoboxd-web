@@ -25,7 +25,9 @@ export async function loader() {
   return { videos };
 }
 
-export default function Home({ loaderData }: Route.ComponentProps) {
+export default function Home(
+  { loaderData }: Route.ComponentProps
+) {
   const { videos } = loaderData;
 
   return (
