@@ -1,4 +1,4 @@
-import ky from 'ky';
+import ky from "ky";
 import { Button } from "~/components/ui/button";
 import type { Route } from "./+types/home";
 import { apiUrl } from "~/lib/api";
@@ -25,7 +25,7 @@ export async function loader(): Promise<{ videos: Video[] }> {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  // const { videos } = loaderData;
+  const { videos } = loaderData;
 
   return (
     <div>
