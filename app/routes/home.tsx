@@ -25,7 +25,7 @@ export async function loader(): Promise<{ videos: Video[] }> {
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { videos } = loaderData;
+  // const { videos } = loaderData;
 
   return (
     <div>
@@ -33,13 +33,13 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <Button>Search Videos</Button>
 
       <ul>
-        {videos.map((video) => (
+        {/* {videos.map((video) => (
           <li key={video.id}>
             <h2>{video.title}</h2>
             <p>{video.description}</p>
             <a href={video.url}>Watch</a>
           </li>
-        ))}
+        ))} */}
       </ul>
     </div>
   );
