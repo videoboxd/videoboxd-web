@@ -2,7 +2,24 @@ import type { Route } from "./+types/home";
 import { useState } from "react";
 import { Form, useSubmit } from "react-router";
 import StarRating_Basic from "components/commerce-ui/star-rating-basic";
-"use client";
+import { FilePlus, Heart } from "lucide-react";
+
+function LoveButton() {
+  const [liked, setLiked] = useState(false);
+
+  return (
+    <button
+      onClick={(e) => {e.preventDefault(); setLiked(!liked);}}
+      className="transition duration-200"
+    >
+      <Heart
+        className={`w-8 h-8 transition-all ${
+          liked ? "fill-red-500 text-red-500" : "text-gray-400 hover:text-red-500 hover:fill-red-500"
+        }`}
+      />
+    </button>
+  )
+}
 
 export default function NewVideo() {
     const [rating, setRating] = useState(0);
@@ -11,7 +28,9 @@ export default function NewVideo() {
       <div>
         <div className="flex flex-row justify-between">
           <div className="flex flex-row m-2">
-            <img alt="create-logo"></img>
+            <div className="m-1">
+              <FilePlus/>
+            </div>
             <h1 className="text-3xl">Create Review</h1>
           </div>
           <div className="m-2">
@@ -67,15 +86,18 @@ export default function NewVideo() {
                 <div className="flex flex-col item-start m-2">
                   <div className="text-sm m-1 mb-3">
                     Rating
-                    <div className="flex flex-row items-center gap-4">
-                      <StarRating_Basic value={rating} onChange={setRating} maxStars={5} />
-                      <p>({rating})</p>
-                    </div>
+                  </div>
+                  <div className="flex flex-row items-center gap-4">
+                    <StarRating_Basic value={rating} onChange={setRating} maxStars={5} />
+                    <p>({rating})</p>
                   </div>
                 </div>
-                <div className="flex flex-col item-end m-2">
-                  <div className="text-sm m-1 mb-3">
+                <div className="flex flex-col items-center m-2 mr-3">
+                  <div className="text-sm m-1 mb-1">
                     Like
+                  </div>
+                  <div className="m-2">
+                    <LoveButton/>
                   </div>
                 </div>
               </div>
