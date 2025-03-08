@@ -10,7 +10,7 @@ function LoveButton() {
   return (
     <button
       onClick={(e) => {e.preventDefault(); setLiked(!liked);}}
-      className="transition duration-200"
+      className="transition duration-100 cursor-pointer"
     >
       <Heart
         className={`w-8 h-8 transition-all ${
@@ -25,7 +25,7 @@ export default function NewVideo() {
     const [rating, setRating] = useState(0);
 
     return (
-      <div>
+      <div className="m-5 bg-slate-700 p-3 border rounded-xl">
         <div className="flex flex-row justify-between">
           <div className="flex flex-row m-2">
             <div className="m-1">
@@ -34,7 +34,9 @@ export default function NewVideo() {
             <h1 className="text-3xl">Create Review</h1>
           </div>
           <div className="m-2">
-            <h3 className="text-lg">Close</h3>
+            <button className="text-lg cursor-pointer">
+              Close
+            </button>
           </div>
         </div>
         <div className="flex flex-row">
@@ -96,12 +98,12 @@ export default function NewVideo() {
                   <div className="text-sm m-1 mb-1">
                     Like
                   </div>
-                  <div className="m-2">
+                  <div className="m-2 cursor-pointer">
                     <LoveButton/>
                   </div>
                 </div>
               </div>
-              <button>
+              <button type="submit" onClick={(e) => e.preventDefault()}>
                 <div className="bg-sky-400 rounded-full px-3 py-2 m-2 text-black font-medium">
                   Save
                 </div>
