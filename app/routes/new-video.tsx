@@ -1,6 +1,7 @@
 import type { Route } from "./+types/home";
 import { useState } from "react";
 import { Form, useSubmit } from "react-router";
+import StarRating_Basic from "components/commerce-ui/star-rating-basic";
 "use client";
 
 export default function NewVideo() {
@@ -66,6 +67,10 @@ export default function NewVideo() {
                 <div className="flex flex-col item-start m-2">
                   <div className="text-sm m-1 mb-3">
                     Rating
+                    <div className="flex flex-row items-center gap-4">
+                      <StarRating_Basic value={rating} onChange={setRating} maxStars={5} />
+                      <p>({rating})</p>
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-col item-end m-2">
