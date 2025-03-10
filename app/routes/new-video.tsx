@@ -1,5 +1,5 @@
 import type { Route } from "./+types/home";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Form, useSubmit, useNavigate } from "react-router";
 import StarRating_Basic from "components/commerce-ui/star-rating-basic";
 import { FilePlus, Heart } from "lucide-react";
@@ -71,10 +71,14 @@ export default function NewVideo() {
     const [isLike, setLike] = useState(false);
     const [videoId, setVideoId] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [selectedTags, setSelectedTags] = useState<Tag[]>([]);
+    const [tagInput, setTagInput] = useState("");
+    const [tagError, setTagError] = useState<string | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
 
     const navigate = useNavigate();
 
-    const { register, handleSubmit, watch, formState: { errors }, reset } = useForm<VideoFormValues>({
+    const { register, handleSubmit, watch, formState: { errors }, reset, setValue } = useForm<VideoFormValues>({
       resolver: zodResolver(videoFormSchema),
       defaultValues: {
         platform: "youtube"
@@ -84,7 +88,7 @@ export default function NewVideo() {
 
     useEffect(() => {
       const validId = extractYouTubeID(originalUrl);
-      setVideoId(validId); // Now runs only when originalUrl changes
+      setVideoId(validId);
     }, [originalUrl]);
 
     const goToHome = () => {
@@ -94,6 +98,34 @@ export default function NewVideo() {
     const goBack = () => {
       navigate(-1);
     }
+
+    const handleTagInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setTagInput(e.target.value);
+      setTagError(null);
+    }
+
+    const handleTagInputKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        const trimmedTag = tagInput.trim();
+        if (trimmedTag) {
+          if (trimmedTag && ALLOWED_TAGS.includes(trimmedTag as Tag)) {
+            if (!selectedTags.includes(trimmedTag as Tag)) {
+              setSelectedTags([...selectedTags, trimmedTag as Tag]);
+              setValue("tags", [...selectedTags, trimmedTag as Tag]);
+            }
+            setTagInput("");
+          } else {
+            setTagError(`"${trimmedTag}" is not an allowed tag.`);
+          }
+        }
+      }
+    }
+
+    const removeTag = (tagToRemove: Tag) => {
+      setSelectedTags(selectedTags.filter((tag) => tag !== tagToRemove));
+      setValue("tags", selectedTags.filter((tag) => tag !== tagToRemove));
+    };
 
     const onSubmit = async (data: any) => {
       setIsSubmitting(true);
@@ -122,7 +154,7 @@ export default function NewVideo() {
         formattedDate = new Date().toISOString();
       }
 
-      const tagList = data.tags ? data.tags.split(',').map((tag: any) => tag.trim()).filter((tag: any) => tag.length > 0) : [];
+      // const tagList = data.tags ? data.tags.split(',').map((tag: any) => tag.trim()).filter((tag: any) => tag.length > 0) : [];
       
       const payload = {
         ...data,
@@ -132,7 +164,7 @@ export default function NewVideo() {
         rating: rating,
         like: isLike,
         uploadedAt: formattedDate,
-        tags: tagList
+        tags: selectedTags
       }
 
       try {
@@ -221,12 +253,39 @@ export default function NewVideo() {
               </div>
               <div className="flex flex-col">
                 <label className="m-2">Tags</label>
-                <input
+                <div className="flex flex-wrap m-2">
+                  {selectedTags.map((tag) => (
+                    <div
+                      key={tag}
+                      className="m-1 px-3 py-1 rounded-md bg-sky-500 text-white flex items-center"
+                    >
+                      {tag}
+                      <button
+                        type="button"
+                        onClick={() => removeTag(tag)}
+                        className="ml-2 text-white"
+                      >
+                        x
+                      </button>
+                    </div>
+                  ))}
+                  <input
+                    ref={inputRef}
+                    type="text"
+                    value={tagInput}
+                    onChange={handleTagInputChange}
+                    onKeyDown={handleTagInputKeyDown}
+                    placeholder="Enter tags (space or enter to add)"
+                    className="bg-white rounded-md m-1 py-1 px-3 placeholder:text-gray-500 text-slate-800"
+                  />
+                </div>
+                {tagError && <p className="text-red-500 m-2">{tagError}</p>}
+                {/* <input
                   {...register("tags")}
                   type="text"
                   placeholder="e.g. music, technology"
                   className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
-                />
+                /> */}
               </div>
               <div className="flex flex-col">
                 <label className="m-2">Your Review</label>
