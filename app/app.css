@@ -133,5 +133,8 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: brightness(0) grayscale(1); /* Equivalent to Tailwind's brightness-0 grayscale */
+    }    
   }
 }
