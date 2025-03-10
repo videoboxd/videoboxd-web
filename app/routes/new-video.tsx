@@ -1,15 +1,22 @@
 import type { Route } from "./+types/home";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Form, useSubmit } from "react-router";
 import StarRating_Basic from "components/commerce-ui/star-rating-basic";
 import { FilePlus, Heart } from "lucide-react";
+import { useForm } from "react-hook-form";
+import ky from "ky";
+import { apiUrl } from "~/lib/api";
 
-function LoveButton() {
+function LoveButton({ setLike }: {setLike: (liked: boolean) => void }) {
   const [liked, setLiked] = useState(false);
 
   return (
     <button
-      onClick={(e) => {e.preventDefault(); setLiked(!liked);}}
+      onClick={(e) => {
+        e.preventDefault();
+        setLiked(!liked);
+        setLike(!liked);
+      }}
       className="transition duration-100 cursor-pointer"
     >
       <Heart
@@ -21,8 +28,66 @@ function LoveButton() {
   )
 }
 
+const youtubeRegex = /(?:youtube\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
+
+function extractYouTubeID(url: string) {
+  const match = url.match(youtubeRegex);
+  return match ? match[1] : null;
+}
+
 export default function NewVideo() {
     const [rating, setRating] = useState(0);
+    const [isLike, setLike] = useState(false);
+    const [videoId, setVideoId] = useState<string | null>(null);
+
+    const { register, handleSubmit, watch, formState: { errors } } = useForm();
+    const originalUrl = watch("originalUrl", "");
+
+    useEffect(() => {
+      const validId = extractYouTubeID(originalUrl);
+      setVideoId(validId); // Now runs only when originalUrl changes
+    }, [originalUrl]);
+
+    const onSubmit = async (data: any) => {
+      if (data.uploadedAt && data.uploadedAt.trim() !== '') {
+        try {
+          const dateParts = data.uploadedAt.split('-');
+          const year = parseInt(dateParts[0]);
+          const month = parseInt(dateParts[1]) - 1; // JS months are 0-indexed
+          const day = parseInt(dateParts[2]);
+          
+          // Create date with time to match your working example format
+          const uploadedDate = new Date(Date.UTC(year, month, day, 18, 28, 0));
+          
+          if (!isNaN(uploadedDate.getTime())) {
+            data.uploadedAt = uploadedDate.toISOString();
+          } else {
+            data.uploadedAt = new Date().toISOString(); // Fallback to current date
+          }
+        } catch (error) {
+          console.error("Date parsing error:", error);
+          data.uploadedAt = new Date().toISOString();
+        }
+      } else {
+        data.uploadedAt = new Date().toISOString();
+      }
+      data.tags = data.tags ? data.tags.split(',').map((tag: any) => tag.trim()).filter((tag: any) => tag.length > 0) : [];
+      data['userId'] = "01JNYFWJKVV32X3MRP7R2YQGES";
+      data['platformVideoId'] = videoId;
+      data['thumbnail'] = `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`;
+      data['rating'] = rating;
+      data['like'] = isLike;
+
+      console.log("Sending Data:", JSON.stringify(data, null, 2));
+
+      try {
+        await ky.post(`${apiUrl}/videos`, {json: data}).json();
+        alert("Succesfully submitted new video");
+      } catch (error) {
+        console.error("Error posting new video", error);
+        alert("Failed to submit video. Check console for details.");
+      }
+    }
 
     return (
       <div className="m-5 bg-slate-700 p-3 border rounded-xl">
@@ -41,20 +106,44 @@ export default function NewVideo() {
         </div>
         <div className="flex flex-row">
           <div className="grid grid-cols-1 flex-2/3">
-            <Form method="post">
+            <Form method="post" onSubmit={handleSubmit(onSubmit)}>
               <div className="flex flex-col">
                 <label className="m-2">Video Link</label>
                 <input
-                  name="video"
+                  {...register("originalUrl", {
+                    required: "YouTube URL is required",
+                    pattern: {
+                      value: youtubeRegex,
+                      message: "Invalid YouTube URL",
+                    }
+                  })}
                   type="text"
                   placeholder="Paste your video link here"
+                  className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
+                />
+                {errors.originalUrl && <p className="text-red-500 m-2">{String(errors.originalUrl.message)}</p>}
+              </div>
+              <div className="flex flex-col">
+                <label className="m-2">Title</label>
+                <input 
+                  {...register("title")}
+                  type="text"
+                  placeholder="Please input video title"
+                  className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
+                />
+              </div>
+              <div className="flex flex-col">
+                <label className="m-2">Uploaded At</label>
+                <input 
+                  {...register("uploadedAt")}
+                  type="date"
                   className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                 />
               </div>
               <div className="flex flex-col">
                 <label className="m-2">Description</label>
                 <textarea 
-                  name="description"
+                  {...register("description")}
                   placeholder="Please describe the video"
                   className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                 />
@@ -62,24 +151,25 @@ export default function NewVideo() {
               <div className="flex flex-col">
                 <label className="m-2">Platform</label>
                 <select
+                  {...register("platform")}
                   className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                 >
-                  <option>Youtube</option>
+                  <option>youtube</option>
                 </select>
               </div>
               <div className="flex flex-col">
                 <label className="m-2">Tags</label>
                 <input
-                  name="tags"
+                  {...register("tags")}
                   type="text"
-                  placeholder="e.g. podcast"
+                  placeholder="e.g. music, technology"
                   className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                 />
               </div>
               <div className="flex flex-col">
-                <label className="m-2">Comments</label>
+                <label className="m-2">Your Review</label>
                 <textarea
-                  name="comments"
+                  {...register("review")}
                   placeholder="add your review here"
                   className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                 />
@@ -99,20 +189,30 @@ export default function NewVideo() {
                     Like
                   </div>
                   <div className="m-2 cursor-pointer">
-                    <LoveButton/>
+                    <LoveButton
+                      setLike={setLike}
+                    />
                   </div>
                 </div>
               </div>
-              <button type="submit" onClick={(e) => e.preventDefault()}>
+              <button type="submit">
                 <div className="bg-sky-400 rounded-full px-3 py-2 m-2 text-black font-medium">
                   Save
                 </div>
               </button>
             </Form>
           </div>
-          <div className="flex-1/3">
-            <div className="border border-white min-h-1/2 m-3">
-              <img alt="input image"></img>
+          <div className="flex-1/3 m-4">
+            <div className="border border-white w-full aspect-[16/9] m-3">
+              {
+                videoId ?
+                <img
+                  src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+                  alt="YouTube Thumbnail"
+                  className="w-full object-cover"
+                /> :
+                <p className="text-center text-white">No Thumbnail</p>
+              }
             </div>
           </div>
         </div>
