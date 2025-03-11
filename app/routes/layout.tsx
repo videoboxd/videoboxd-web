@@ -1,4 +1,6 @@
-import { Link, Outlet } from "react-router";
+import { Link, Outlet, ScrollRestoration } from "react-router";
+import { Footer } from "~/components/shared/footer";
+import { Navbar } from "~/components/shared/navbar";
 
 const navigationItems = [
   { label: "Home", to: "/" },
@@ -8,23 +10,14 @@ const navigationItems = [
 export default function LayoutRoute() {
   return (
     <div className="flex flex-col min-h-screen">
-      <nav className="p-4 bg-gray-800">
-        <ul className="flex gap-4">
-          {navigationItems.map((navItem) => (
-            <li key={navItem.label}>
-              <Link to={navItem.to}>{navItem.label}</Link>
-            </li>
-          ))}
-        </ul>
-      </nav>
+      <Navbar />
 
-      <main className="flex-[1]">
+      <main className="flex-[1] bg-neutral-600">
         <Outlet />
       </main>
 
-      <footer className="p-4 bg-gray-800">
-        <p>Footer</p>
-      </footer>
+      <Footer />
+      <ScrollRestoration />
     </div>
   );
 }
