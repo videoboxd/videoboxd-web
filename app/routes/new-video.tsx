@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import { useState, useEffect, useRef } from "react";
 import { Form, useNavigate } from "react-router";
-import StarRating_Basic from "components/commerce-ui/star-rating-basic";
+import StarRating_Basic from "~/components/commerce-ui/star-rating-basic";
 import { FilePlus, Heart } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
