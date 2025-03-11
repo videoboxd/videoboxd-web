@@ -11,13 +11,12 @@ import { parseWithZod } from "@conform-to/zod";
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Login Videoboxd" },
-    { name: "description", content: "Explore interesting videos." },
+    { name: "description", content: "Continue to existing account." },
   ];
 }
 
 export async function loader() {
-  console.log("xyzThis is data loader: LOGIN");
-  //   return {};
+  return null;
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
@@ -32,7 +31,7 @@ export async function action({ request }: Route.ClientActionArgs) {
 
   const response = await auth.login(submission.value);
   if (!response) {
-    console.log("Login failed");
+    console.error("Login failed");
     return;
   }
 
@@ -51,7 +50,7 @@ export default function LoginRoute() {
                   <div className="flex flex-col items-center text-center">
                     <h1 className="text-2xl font-bold">Welcome back</h1>
                     <p className="text-balance text-muted-foreground">
-                      Enter your username and password to sign in.
+                      Enter your username and password to login.
                     </p>
                   </div>
                   <div className="grid gap-2">
@@ -84,7 +83,7 @@ export default function LoginRoute() {
                       to="/register"
                       className="underline underline-offset-4"
                     >
-                      Sign up
+                      Register
                     </Link>
                   </div>
                 </div>

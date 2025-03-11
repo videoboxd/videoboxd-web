@@ -1,13 +1,15 @@
-import type { Route } from "./+types/home";
 import { useState, useEffect, useRef } from "react";
 import { Form, useNavigate } from "react-router";
-import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import { FilePlus, Heart } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import ky from "ky";
+
 import { apiUrl } from "~/lib/api";
+import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
+
+// FIXME: Move all of these to a separate file
 
 const youtubeRegex =
   /(?:youtube\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -49,7 +51,8 @@ function extractYouTubeID(url: string) {
   return match ? match[1] : null;
 }
 
-function LoveButton({ setLike }: { setLike: (liked: boolean) => void }) {
+// FIXME: Move to a separate component file
+function LikeButton({ setLike }: { setLike: (liked: boolean) => void }) {
   const [liked, setLiked] = useState(false);
 
   return (
@@ -73,7 +76,8 @@ function LoveButton({ setLike }: { setLike: (liked: boolean) => void }) {
   );
 }
 
-export default function NewVideo() {
+export default function NewVideoRoute() {
+  // FIXME: Use react-hook-form or Conform
   const [rating, setRating] = useState(0);
   const [isLike, setLike] = useState(false);
   const [videoId, setVideoId] = useState<string | null>(null);
@@ -341,7 +345,7 @@ export default function NewVideo() {
               <div className="flex flex-col items-center m-2 mr-3">
                 <div className="text-sm m-1 mb-1">Like</div>
                 <div className="m-2 cursor-pointer">
-                  <LoveButton setLike={setLike} />
+                  <LikeButton setLike={setLike} />
                 </div>
               </div>
             </div>

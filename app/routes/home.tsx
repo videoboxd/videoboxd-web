@@ -1,11 +1,9 @@
 import ky from "ky";
-import { Button } from "~/components/ui/button";
 import type { Route } from "./+types/home";
 import { apiUrl } from "~/lib/api";
-import heroImage from "~/asset/images/hero-image.png";
 import SearchForm from "~/components/shared/SearchFrom";
 import VideoContent from "~/components/shared/VideoContent";
-import type { Video } from "~/schema/schema";
+import type { Video } from "~/features/video/schema";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -25,7 +23,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   return (
     <div
       className="bg-fixed bg-cover bg-top bg-no-repeat"
-      style={{ backgroundImage: `url(${heroImage})` }}
+      style={{ backgroundImage: "url(/images/hero-image.jpg)" }}
     >
       <section className="min-h-[90dvh] flex flex-col items-center justify-center font-bold text-5xl md:text-6xl px-8">
         <h1 className="text-center leading-20">

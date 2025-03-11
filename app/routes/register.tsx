@@ -22,7 +22,9 @@ export default function RegisterRoute() {
               <form className="p-6 md:p-8">
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col items-center text-center">
-                    <h1 className="text-2xl font-bold">Sign up to Videoboxd</h1>
+                    <h1 className="text-2xl font-bold">
+                      Create Videoboxd Account
+                    </h1>
                     <p className="text-balance text-muted-foreground">
                       Let's get started. Fill in the details below to create
                       your account.
@@ -64,7 +66,7 @@ export default function RegisterRoute() {
                   <div className="text-center text-sm">
                     Already have an account?{" "}
                     <Link to="/login" className="underline underline-offset-4">
-                      Sign in
+                      Login
                     </Link>
                   </div>
                 </div>

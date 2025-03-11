@@ -18,7 +18,7 @@ export function Navbar() {
         </Link>
         <div className="hidden items-center gap-8 text-base font-semibold md:flex">
           <Link to="/login">
-            <div className="py-4 px-6 bg-blue-400 rounded-full">Sign In</div>
+            <div className="py-4 px-6 bg-blue-400 rounded-full">Login</div>
           </Link>
         </div>
       </div>
