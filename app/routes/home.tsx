@@ -7,7 +7,6 @@ import SearchForm from "~/components/shared/SearchFrom";
 import VideoContent from "~/components/shared/VideoContent";
 import type { Video } from "~/schema/schema";
 
-
 export function meta({}: Route.MetaArgs) {
   return [
     { title: "Videoboxd" },
@@ -15,9 +14,6 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-
-
-// TODO: use ky package
 export async function loader(): Promise<{ videos: Video[] }> {
   const videos = await ky.get(`${apiUrl}/videos`).json<Video[]>();
   return { videos };
@@ -27,11 +23,16 @@ export default function Home({ loaderData }: Route.ComponentProps) {
   const { videos } = loaderData;
 
   return (
-    <div className="bg-fixed bg-cover bg-top bg-no-repeat" style={{ backgroundImage: `url(${heroImage})` }}>
+    <div
+      className="bg-fixed bg-cover bg-top bg-no-repeat"
+      style={{ backgroundImage: `url(${heroImage})` }}
+    >
       <section className="min-h-[90dvh] flex flex-col items-center justify-center font-bold text-5xl md:text-6xl px-8">
         <h1 className="text-center leading-20">
-          Explore interesting videos<br/>
-          Rate your favorites<br/>
+          Explore interesting videos
+          <br />
+          Rate your favorites
+          <br />
           Tell your friends
         </h1>
         <SearchForm />
@@ -39,7 +40,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
       <section className="bg-[#1a1a1a]">
         <div className="container mx-auto py-12">
-
           <h3 className="text-4xl">Popular review this week...</h3>
           <div className="mt-8">
             <ul className="grid grid-cols-3">
@@ -57,7 +57,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
               ))}
             </ul>
           </div>
-
         </div>
       </section>
     </div>

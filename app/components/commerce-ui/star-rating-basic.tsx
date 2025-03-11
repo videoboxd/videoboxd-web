@@ -47,7 +47,7 @@ const StarIcon = React.memo(
 );
 StarIcon.displayName = "StarIcon";
 
-const StarRating_Basic = ({
+const StarRatingBasic = ({
   className,
   color = "#e4c616",
   iconSize = 24,
@@ -128,4 +128,4 @@ const StarRating_Basic = ({
   );
 };
 
-export default StarRating_Basic;
+export default StarRatingBasic;
