@@ -1,64 +1,17 @@
 import { useState, useEffect, useRef } from "react";
 import { Form, useNavigate } from "react-router";
-import { FilePlus, Heart } from "lucide-react";
+import { FilePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
 import ky from "ky";
-
 import { apiUrl } from "~/lib/api";
-import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
-
-// FIXME: Move all of these to a separate file
-
-const youtubeRegex =
-  /(?:youtube\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  
-const videoFormSchema = z.object({
-  originalUrl: z
-    .string()
-    .min(1, "YouTube URL is required")
-    .regex(youtubeRegex, "Invalid YouTube URL"),
-  platform: z.string().default("youtube"),
-});
-
-type VideoFormValues = z.infer<typeof videoFormSchema>;
-
-function extractYouTubeID(url: string) {
-  const match = url.match(youtubeRegex);
-  return match ? match[1] : null;
-}
-
-// FIXME: Move to a separate component file
-function LikeButton({ setLike }: { setLike: (liked: boolean) => void }) {
-  const [liked, setLiked] = useState(false);
-
-  return (
-    <button
-      type="button"
-      onClick={(e) => {
-        e.preventDefault();
-        setLiked(!liked);
-        setLike(!liked);
-      }}
-      className="transition duration-100 cursor-pointer"
-    >
-      <Heart
-        className={`w-8 h-8 transition-all ${
-          liked
-            ? "fill-red-500 text-red-500"
-            : "text-gray-400 hover:text-red-500 hover:fill-red-500"
-        }`}
-      />
-    </button>
-  );
-}
+import { youtubeRegex, videoFormSchema, extractYouTubeID } from "~/lib/video";
+import type { VideoFormValues } from "~/lib/video";
 
 export default function NewVideoRoute() {
   // FIXME: Use react-hook-form or Conform
   const [videoId, setVideoId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const inputRef = useRef<HTMLInputElement>(null);
 
   const navigate = useNavigate();
 
@@ -68,7 +21,6 @@ export default function NewVideoRoute() {
     watch,
     formState: { errors },
     reset,
-    setValue,
   } = useForm<VideoFormValues>({
     resolver: zodResolver(videoFormSchema),
     defaultValues: {
@@ -151,7 +103,7 @@ export default function NewVideoRoute() {
   };
 
   return (
-    <div className="m-5 bg-slate-700 p-3 border rounded-xl">
+    <div className="mt-20 m-5 bg-slate-700 p-3 border rounded-xl">
       <div className="flex flex-row justify-between">
         <div className="flex flex-row m-2">
           <div className="m-1">
