@@ -1,3 +1,4 @@
+import type { Route } from "./+types/home";
 import { useState, useEffect, useRef } from "react";
 import { Form, useNavigate } from "react-router";
 import { FilePlus } from "lucide-react";
@@ -7,6 +8,13 @@ import ky from "ky";
 import { apiUrl } from "~/lib/api";
 import { youtubeRegex, videoFormSchema, extractYouTubeID } from "~/lib/video";
 import type { VideoFormValues } from "~/lib/video";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Register New Video" },
+    { name: "description", content: "Register a new video to be reviewed." },
+  ];
+}
 
 export default function NewVideoRoute() {
   // FIXME: Use react-hook-form or Conform
