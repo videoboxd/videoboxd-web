@@ -13,19 +13,7 @@ import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 
 const youtubeRegex =
   /(?:youtube\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-
-const ALLOWED_TAGS = [
-  "technology",
-  "gaming",
-  "education",
-  "entertainment",
-  "music",
-] as const;
-
-const TagEnum = z.enum(ALLOWED_TAGS);
-
-type Tag = z.infer<typeof TagEnum>;
-
+  
 const videoFormSchema = z.object({
   originalUrl: z
     .string()
