@@ -57,36 +57,11 @@ export default function NewVideoRoute() {
   const onSubmit = async (data: any) => {
     setIsSubmitting(true);
 
-    let formattedDate: string | null = null;
-    if (data.uploadedAt && data.uploadedAt.trim() !== "") {
-      try {
-        const dateParts = data.uploadedAt.split("-");
-        const year = parseInt(dateParts[0]);
-        const month = parseInt(dateParts[1]) - 1; // JS months are 0-indexed
-        const day = parseInt(dateParts[2]);
-
-        // Create date with time to match your working example format
-        const uploadedDate = new Date(Date.UTC(year, month, day, 18, 28, 0));
-
-        if (!isNaN(uploadedDate.getTime())) {
-          formattedDate = uploadedDate.toISOString();
-        } else {
-          formattedDate = new Date().toISOString(); // Fallback to current date
-        }
-      } catch (error) {
-        console.error("Date parsing error:", error);
-        formattedDate = new Date().toISOString();
-      }
-    } else {
-      formattedDate = new Date().toISOString();
-    }
-
     const payload = {
       ...data,
       userId: "01JNYFWJKVV32X3MRP7R2YQGES",
       platformVideoId: videoId,
       thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
-      uploadedAt: formattedDate,
     };
 
     try {

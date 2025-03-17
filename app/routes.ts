@@ -12,5 +12,6 @@ export default [
     route("register", "routes/register.tsx"),
     route("login", "routes/login.tsx"),
     route("new", "routes/new-video.tsx"),
+    route("review", "routes/new-review.tsx"),
   ]),
 ] satisfies RouteConfig;
