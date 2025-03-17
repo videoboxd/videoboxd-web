@@ -8,6 +8,10 @@ import ky from "ky";
 import { apiUrl } from "~/lib/api";
 import { youtubeRegex, videoFormSchema, extractYouTubeID } from "~/lib/video";
 import type { VideoFormValues } from "~/lib/video";
+import { Card } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { Label } from "@radix-ui/react-label";
+import { Select } from "~/components/ui/select";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -111,79 +115,80 @@ export default function NewVideoRoute() {
   };
 
   return (
-    <div className="mt-20 m-5 bg-slate-700 p-3 border rounded-xl">
-      <div className="flex flex-row justify-between">
-        <div className="flex flex-row m-2">
-          <div className="m-1">
-            <FilePlus />
+    <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-3xl">
+        <Card>
+          <div className="py-3 px-6">
+            <div className="flex flex-row justify-center mb-4">
+              <div className="flex flex-row m-2">
+                <div className="m-1">
+                  <FilePlus />
+                </div>
+                <h1 className="text-2xl font-bold">Register A Video</h1>
+              </div>
+            </div>
+            <div className="flex flex-row">
+              <div className="grid grid-cols-1 flex-1/2">
+                <Form method="post" onSubmit={handleSubmit(onSubmit)}>
+                  <div className="flex flex-col">
+                    <Label className="m-2">Video Link</Label>
+                    <Input
+                      {...register("originalUrl")}
+                      type="text"
+                      placeholder="Paste your video link here"
+                      className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
+                    />
+                    {errors.originalUrl && (
+                      <p className="text-red-500 m-2">{errors.originalUrl.message}</p>
+                    )}
+                  </div>
+                  <div className="flex flex-col">
+                    <Label className="m-2">Platform</Label>
+                    <Select
+                      {...register("platform")}
+                      className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
+                    >
+                      <option>youtube</option>
+                    </Select>
+                  </div>
+                  <div className="flex flex-row justify-between mt-10">
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className={`bg-sky-400 rounded-full px-3 py-2 m-2 text-black font-medium ${
+                        isSubmitting
+                          ? "opacity-50 cursor-not-allowed"
+                          : "hover:bg-sky-500 transition-colors"
+                      }`}
+                    >
+                      {isSubmitting ? "Saving..." : "Save"}
+                    </button>
+                    <button
+                      type="button"
+                      onClick={goBack}
+                      className="bg-gray-500 rounded-full px-3 py-2 m-2 text-white font-medium hover:bg-gray-600 transition-colors"
+                    >
+                      Cancel
+                    </button>
+                  </div>
+                </Form>
+              </div>
+              <div className="flex-1/2 p-4">
+                <div className="flex border border-white w-full aspect-[16/9] m-3 items-center justify-center">
+                  {videoId ? (
+                    <img
+                      src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+                      alt="YouTube Thumbnail"
+                      className="w-full object-cover"
+                    />
+                  ) : (
+                    <p className="text-white">No Thumbnail</p>
+                  )}
+                </div>
+              </div>
+            </div>
           </div>
-          <h1 className="text-3xl">Create Review</h1>
-        </div>
-        <div className="m-2">
-          <button className="text-lg cursor-pointer" onClick={goToHome}>
-            Close
-          </button>
-        </div>
-      </div>
-      <div className="flex flex-row">
-        <div className="grid grid-cols-1 flex-2/3">
-          <Form method="post" onSubmit={handleSubmit(onSubmit)}>
-            <div className="flex flex-col">
-              <label className="m-2">Video Link</label>
-              <input
-                {...register("originalUrl")}
-                type="text"
-                placeholder="Paste your video link here"
-                className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
-              />
-              {errors.originalUrl && (
-                <p className="text-red-500 m-2">{errors.originalUrl.message}</p>
-              )}
-            </div>
-            <div className="flex flex-col">
-              <label className="m-2">Platform</label>
-              <select
-                {...register("platform")}
-                className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
-              >
-                <option>youtube</option>
-              </select>
-            </div>
-            <div className="flex gap-3">
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className={`bg-sky-400 rounded-full px-3 py-2 m-2 text-black font-medium ${
-                  isSubmitting
-                    ? "opacity-50 cursor-not-allowed"
-                    : "hover:bg-sky-500 transition-colors"
-                }`}
-              >
-                {isSubmitting ? "Saving..." : "Save"}
-              </button>
-              <button
-                type="button"
-                onClick={goBack}
-                className="bg-gray-500 rounded-full px-3 py-2 m-2 text-white font-medium hover:bg-gray-600 transition-colors"
-              >
-                Cancel
-              </button>
-            </div>
-          </Form>
-        </div>
-        <div className="flex-1/3 m-4">
-          <div className="border border-white w-full aspect-[16/9] m-3">
-            {videoId ? (
-              <img
-                src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
-                alt="YouTube Thumbnail"
-                className="w-full object-cover"
-              />
-            ) : (
-              <p className="text-center text-white">No Thumbnail</p>
-            )}
-          </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
