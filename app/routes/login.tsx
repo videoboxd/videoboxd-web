@@ -1,12 +1,12 @@
 import type { Route } from "./+types/home";
-import { Link, redirect } from "react-router";
+import { Form, Link, redirect } from "react-router";
 import { Card, CardContent } from "~/components/ui/card";
 import { Label } from "@radix-ui/react-label";
 import { Input } from "~/components/ui/input";
 import { Button } from "~/components/ui/button";
 import { auth, UserLoginPayloadSchema } from "~/lib/auth";
-import type { ZodObject, ZodString, ZodTypeAny } from "zod";
 import { parseWithZod } from "@conform-to/zod";
+import { useForm } from "@conform-to/react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,7 +16,10 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader() {
-  return null;
+  const authenticated = await auth.getUser();
+  if (authenticated) return redirect("/");
+
+  return false;
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
@@ -38,14 +41,27 @@ export async function action({ request }: Route.ClientActionArgs) {
   return redirect("/");
 }
 
-export default function LoginRoute() {
+export default function LoginRoute({ actionData }: Route.ComponentProps) {
+  const [form, fields] = useForm({
+    shouldValidate: "onBlur",
+    lastResult: actionData,
+    onValidate({ formData }) {
+      return parseWithZod(formData, { schema: UserLoginPayloadSchema });
+    },
+  });
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
         <div className="flex flex-col gap-6">
           <Card className="overflow-hidden">
             <CardContent className="grid p-0 md:grid-cols-2">
-              <form className="p-6 md:p-8">
+              <Form
+                method="post"
+                id={form.id}
+                onSubmit={form.onSubmit}
+                className="p-6 md:p-8"
+              >
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col items-center text-center">
                     <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -57,9 +73,11 @@ export default function LoginRoute() {
                     <Label htmlFor="username">Username</Label>
                     <Input
                       id="username"
+                      name="username"
                       type="name"
                       placeholder="example123"
                       required
+                      autoComplete="username"
                     />
                   </div>
                   <div className="grid gap-2">
@@ -68,9 +86,11 @@ export default function LoginRoute() {
                     </div>
                     <Input
                       id="password"
+                      name="password"
                       type="password"
                       placeholder="###"
                       required
+                      autoComplete="current-password"
                     />
                   </div>
                   <Button type="submit" className="w-full">
@@ -80,14 +100,14 @@ export default function LoginRoute() {
                   <div className="text-center text-sm">
                     Don&apos;t have an account?{" "}
                     <Link
-                      to="/register"
+                      to={`/register`}
                       className="underline underline-offset-4"
                     >
                       Register
                     </Link>
                   </div>
                 </div>
-              </form>
+              </Form>
               <div className="relative hidden bg-muted md:block">
                 <img
                   src="https://img.freepik.com/free-vector/silver-blurred-background_1034-253.jpg"
