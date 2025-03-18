@@ -1,13 +1,17 @@
 import { Link } from "react-router";
 import { Icon } from "@iconify/react";
-import type { Video } from "~/schema/schema";
-import StarRatingBasic from "../commerce-ui/star-rating-basic";
 
-export default function VideoContent(video: Video) {
+import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
+import type { ResponseVideo } from "~/features/video/type";
+
+export default function VideoContent({ video }: { video: ResponseVideo }) {
   return (
     <li className="bg-[#252525] rounded-lg overflow-hidden max-w-[420px]">
       <Link to="#" className="block">
-        {/* <img src={video.thumbnail} alt={video.title} /> */}
+        {video.thumbnailUrl && (
+          <img src={video.thumbnailUrl} alt={video.title} />
+        )}
+
         <div className="p-4 space-y-1">
           <h3 className="font-bold text-2xl">{video.title}</h3>
           <p>

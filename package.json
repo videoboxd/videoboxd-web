@@ -3,12 +3,14 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "react-router build",
-    "dev": "react-router dev",
+    "dev": "bun generate && react-router dev",
+    "build": "bun generate:prod && react-router build",
     "start": "react-router-serve ./build/server/index.js",
     "typecheck": "react-router typegen && tsc",
     "s": "shadcn",
-    "test": "vitest"
+    "test": "vitest",
+    "generate": "openapi-typescript http://localhost:3000/openapi.json -o ./app/schema.d.ts",
+    "generate:prod": "openapi-typescript https://api.videoboxd.com/openapi.json -o ./app/schema.d.ts"
   },
   "dependencies": {
     "@conform-to/react": "^1.2.2",
@@ -40,6 +42,7 @@
     "@types/node": "^20",
     "@types/react": "^19.0.1",
     "@types/react-dom": "^19.0.1",
+    "openapi-typescript": "^7.6.1",
     "react-router-devtools": "^1.1.0",
     "shadcn": "^2.4.0-canary.10",
     "tailwindcss": "^4.0.0",

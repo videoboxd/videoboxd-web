@@ -3,7 +3,7 @@ import type { Route } from "./+types/home";
 import { apiUrl } from "~/lib/api";
 import SearchForm from "~/components/shared/SearchFrom";
 import VideoContent from "~/components/shared/VideoContent";
-import type { Video } from "~/features/video/schema";
+import type { ResponseVideos } from "~/features/video/type";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -12,8 +12,8 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader(): Promise<{ videos: Video[] }> {
-  const videos = await ky.get(`${apiUrl}/videos`).json<Video[]>();
+export async function loader() {
+  const videos = await ky.get(`${apiUrl}/videos`).json<ResponseVideos>();
   return { videos };
 }
 
@@ -42,16 +42,17 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <div className="mt-8">
             <ul className="grid grid-cols-3">
               {videos.map((video) => (
-                <VideoContent key={video.id} {...video} />
+                <VideoContent key={video.id} video={video} />
               ))}
             </ul>
           </div>
 
           <h3 className="text-4xl mt-12">Just reviewed...</h3>
+
           <div className="mt-8 overflow-x-auto">
-            <ul className="flex flex-nowrap">
+            <ul className="flex flex-wrap">
               {videos.map((video) => (
-                <VideoContent key={video.id} {...video} />
+                <VideoContent key={video.id} video={video} />
               ))}
             </ul>
           </div>
