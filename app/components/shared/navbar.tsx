@@ -9,7 +9,7 @@ type AuthUser = {
 
 export function Navbar() {
   return (
-    <div className="fixed flex w-full items-center justify-center p-4 bg-[#00000080]">
+    <div className="flex w-full items-center justify-center p-4 bg-[#00000080]">
       <div className="max-w-screen-xl w-full flex justify-between">
         <Link to="/">
           <h2 className="p-2 font-brand text-2xl tracking-tight text-white md:text-3xl">

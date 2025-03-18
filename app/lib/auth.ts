@@ -5,15 +5,30 @@ import ky from "ky";
 import { dueDate } from "~/lib/date";
 import { apiUrl } from "~/lib/api";
 
+export type ApiResponse<T> = {
+  success: boolean;
+  message: string;
+  data: T;
+};
+
+export type User = {
+  id: string;
+  fullname: string;
+  email: string;
+  avatarUrl: string;
+  username: string;
+};
+
 export const UserLoginPayloadSchema = z.object({
   username: z.string({ message: "This field is required" }),
   password: z.string({ message: "This field is required" }),
 });
 
 export const UserRegisterPayloadSchema = z.object({
-  username: z.string({ message: "Username is required" }),
-  email: z.string({ message: "Email is required" }),
+  email: z.string().email({ message: "Email is required" }),
   password: z.string({ message: "Password is required" }),
+  fullName: z.string({ message: "Fullname is required" }),
+  username: z.string({ message: "Username is required" }),
 });
 
 export type UserLoginPayload = z.infer<typeof UserLoginPayloadSchema>;
@@ -24,6 +39,7 @@ export type Auth = {
   getToken: () => void;
   register: (userRegister: UserRegisterPayload) => Promise<boolean>;
   login: (userLogin: UserLoginPayload) => Promise<boolean>;
+  getUser(): Promise<User | null>;
   logout: () => void;
 };
 
@@ -54,16 +70,53 @@ export const auth: Auth = {
     return accessToken.get();
   },
   register: async (userRegister: UserRegisterPayload) => {
-    const response = await ky
+    try {
+      const response = await ky
       .post(`${apiUrl}/auth/register`, { json: userRegister })
-      .json();
+      .json<ApiResponse<User>>();
+
+    if (!response) return false;
+    
     return true;
+    } catch (error) {
+      console.error(error);
+      return false
+    }
   },
   login: async (userLogin: UserLoginPayload) => {
-    const response = await ky
+    try {
+      const response = await ky
       .post(`${apiUrl}/auth/login`, { json: userLogin })
-      .json();
-    return false;
+      .json<ApiResponse<User>>();
+
+      auth.isAuthenticated = true;
+
+      return true;    
+
+    } catch (error) {
+      console.error(error);
+      accessToken.remove();
+      auth.isAuthenticated = false;
+      return false;
+    }
+  
+  },
+  getUser: async () => {
+    const token = accessToken.get();
+    if (!token) return null;
+    try {
+      const response = await ky.get(`${apiUrl}/auth/me`).json<User>();
+
+      auth.isAuthenticated = true;
+
+      return response;
+    } catch (error) {
+      console.error(error);
+
+      accessToken.remove();
+      auth.isAuthenticated = false;
+      return null
+    }
   },
   logout: () => {
     accessToken.remove();
