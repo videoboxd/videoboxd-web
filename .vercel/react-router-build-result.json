@@ -12,7 +12,10 @@
     "routeIdToServerBundleId": {
       "root": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/home": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/about": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/about": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/register": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/login": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/new-video": "nodejs-eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -41,6 +44,27 @@
         "parentId": "routes/layout",
         "file": "app/routes/about.tsx",
         "path": "about",
+        "config": {}
+      },
+      "routes/register": {
+        "id": "routes/register",
+        "parentId": "routes/layout",
+        "file": "app/routes/register.tsx",
+        "path": "register",
+        "config": {}
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "routes/layout",
+        "file": "app/routes/login.tsx",
+        "path": "login",
+        "config": {}
+      },
+      "routes/new-video": {
+        "id": "routes/new-video",
+        "parentId": "routes/layout",
+        "file": "app/routes/new-video.tsx",
+        "path": "new",
         "config": {}
       }
     }
@@ -76,6 +100,24 @@
         "parentId": "routes/layout",
         "file": "routes/about.tsx",
         "path": "about"
+      },
+      "routes/register": {
+        "id": "routes/register",
+        "parentId": "routes/layout",
+        "file": "routes/register.tsx",
+        "path": "register"
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "routes/layout",
+        "file": "routes/login.tsx",
+        "path": "login"
+      },
+      "routes/new-video": {
+        "id": "routes/new-video",
+        "parentId": "routes/layout",
+        "file": "routes/new-video.tsx",
+        "path": "new"
       }
     },
     "serverBuildFile": "index.js",
