@@ -4,20 +4,7 @@ import ky from "ky";
 
 import { dueDate } from "~/lib/date";
 import { apiUrl } from "~/lib/api";
-
-export type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data: T;
-};
-
-export type User = {
-  id: string;
-  fullname: string;
-  email: string;
-  avatarUrl: string;
-  username: string;
-};
+import type { ResponseAuthMe } from "~/features/user/type";
 
 export const UserLoginPayloadSchema = z.object({
   username: z.string({ message: "This field is required" }),
@@ -37,14 +24,22 @@ export type UserRegisterPayload = z.infer<typeof UserRegisterPayloadSchema>;
 export type Auth = {
   isAuthenticated: boolean;
   getToken: () => void;
+
   register: (userRegister: UserRegisterPayload) => Promise<boolean>;
+
+  // TODO: Set cookie
   login: (userLogin: UserLoginPayload) => Promise<boolean>;
-  getUser(): Promise<User | null>;
+
+  // TODO: Get cookie
+  getUser(): Promise<ResponseAuthMe | null>;
+
+  // TODO: Remove cookie
   logout: () => void;
 };
 
+// TODO: Remove this, replace with server-side cookie
+// Because ReactCookie is client-side only
 const COOKIE_NAME = "access-token-name";
-
 export const accessTokenCookie = new ReactCookie(null, {
   path: "/",
   sameSite: "none",
@@ -72,40 +67,39 @@ export const auth: Auth = {
   register: async (userRegister: UserRegisterPayload) => {
     try {
       const response = await ky
-      .post(`${apiUrl}/auth/register`, { json: userRegister })
-      .json<ApiResponse<User>>();
+        .post(`${apiUrl}/auth/register`, { json: userRegister })
+        .json<ResponseAuthMe>();
 
-    if (!response) return false;
-    
-    return true;
+      if (!response) return false;
+
+      return true;
     } catch (error) {
       console.error(error);
-      return false
+      return false;
     }
   },
   login: async (userLogin: UserLoginPayload) => {
     try {
       const response = await ky
-      .post(`${apiUrl}/auth/login`, { json: userLogin })
-      .json<ApiResponse<User>>();
+        .post(`${apiUrl}/auth/login`, { json: userLogin })
+        .json<ResponseAuthMe>();
 
       auth.isAuthenticated = true;
 
-      return true;    
-
+      return true;
     } catch (error) {
       console.error(error);
       accessToken.remove();
       auth.isAuthenticated = false;
       return false;
     }
-  
   },
   getUser: async () => {
     const token = accessToken.get();
     if (!token) return null;
+
     try {
-      const response = await ky.get(`${apiUrl}/auth/me`).json<User>();
+      const response = await ky.get(`${apiUrl}/auth/me`).json<ResponseAuthMe>();
 
       auth.isAuthenticated = true;
 
@@ -115,7 +109,7 @@ export const auth: Auth = {
 
       accessToken.remove();
       auth.isAuthenticated = false;
-      return null
+      return null;
     }
   },
   logout: () => {

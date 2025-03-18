@@ -38,6 +38,8 @@ export async function action({ request }: Route.ClientActionArgs) {
     return;
   }
 
+  // TODO: Set the user session into cookie
+
   return redirect("/");
 }
 
