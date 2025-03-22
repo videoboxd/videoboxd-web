@@ -1,12 +1,13 @@
-import type { Route } from "./+types/home";
-import { Form, Link, redirect } from "react-router";
-import { Card, CardContent } from "~/components/ui/card";
-import { Label } from "@radix-ui/react-label";
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { auth, UserLoginPayloadSchema } from "~/lib/auth";
-import { parseWithZod } from "@conform-to/zod";
+import { useEffect, useState } from "react";
+import { Form, Link, useNavigate } from "react-router";
 import { useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { Label } from "@radix-ui/react-label";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { auth, UserLoginPayloadSchema } from "~/lib/auth";
+import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -16,34 +17,16 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader() {
-  const authenticated = await auth.getUser();
-  if (authenticated) return redirect("/");
-
-  return false;
+  return null;
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
-  let formData = await request.formData();
-  const submission = parseWithZod(formData, {
-    schema: UserLoginPayloadSchema,
-  });
-
-  if (submission.status !== "success") {
-    return submission.reply();
-  }
-
-  const response = await auth.login(submission.value);
-  if (!response) {
-    console.error("Login failed");
-    return;
-  }
-
-  // TODO: Set the user session into cookie
-
-  return redirect("/");
+  return null;
 }
 
 export default function LoginRoute({ actionData }: Route.ComponentProps) {
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
     lastResult: actionData,
@@ -52,18 +35,46 @@ export default function LoginRoute({ actionData }: Route.ComponentProps) {
     },
   });
 
+  useEffect(() => {
+    const checkAuth = async () => {
+      const authenticated = await auth.getUser();
+      if (authenticated) return navigate("/");
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+
+    const formData = new FormData(event.currentTarget);
+    const submission = parseWithZod(formData, {
+      schema: UserLoginPayloadSchema,
+    });
+
+    if (submission.status !== "success") {
+      return;
+    }
+
+    setIsLoading(true);
+    const success = await auth.login(submission.value);
+    setIsLoading(false);
+
+    if (success) {
+      alert("Login Successfully");
+      navigate("/");
+    } else {
+      alert("Username or password is wrong");
+    }
+  };
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
         <div className="flex flex-col gap-6">
           <Card className="overflow-hidden">
             <CardContent className="grid p-0 md:grid-cols-2">
-              <Form
-                method="post"
-                id={form.id}
-                onSubmit={form.onSubmit}
-                className="p-6 md:p-8"
-              >
+              <Form onSubmit={handleSubmit} className="p-6 md:p-8">
                 <div className="flex flex-col gap-6">
                   <div className="flex flex-col items-center text-center">
                     <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -95,8 +106,15 @@ export default function LoginRoute({ actionData }: Route.ComponentProps) {
                       autoComplete="current-password"
                     />
                   </div>
-                  <Button type="submit" className="w-full">
-                    Login
+                  <Button type="submit" className="w-full" disabled={isLoading}>
+                    {!isLoading ? (
+                      "Login"
+                    ) : (
+                      <>
+                        <span className="animate-spin">.</span>
+                        <span>Loading..</span>
+                      </>
+                    )}
                   </Button>
 
                   <div className="text-center text-sm">
