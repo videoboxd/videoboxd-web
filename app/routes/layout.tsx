@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Outlet, ScrollRestoration, useNavigate } from "react-router";
+import { Outlet, ScrollRestoration } from "react-router";
 import { Footer } from "~/components/shared/footer";
 import { Navbar } from "~/components/shared/navbar";
 import { auth } from "~/lib/auth";
@@ -15,11 +15,11 @@ export async function loader() {
 }
 
 export default function LayoutRoute({ loaderData }: Route.ComponentProps) {
-  const navigate = useNavigate();
   useEffect(() => {
     const checkAuth = async () => {
       const authenticated = await auth.getUser();
-      if (authenticated) return navigate("/");
+
+      return authenticated;
     };
 
     checkAuth();
