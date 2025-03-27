@@ -5,3 +5,5 @@
 /.react-router/
 /build/
 .env
+
+schema.d.ts
