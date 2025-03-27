@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+import { useNavigate } from "react-router";
 import { Card, CardContent } from "~/components/ui/card";
 import type { Route } from "./+types/home";
 import { Label } from "@radix-ui/react-label";
@@ -16,11 +18,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader() {
-  const authenticated = await auth.getUser();
-
-  if (authenticated) return redirect("/");
-
-  return false;
+  return null;
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
@@ -33,7 +31,6 @@ export async function action({ request }: Route.ClientActionArgs) {
 
   const response = await auth.register(submission.value);
   if (!response) {
-    console.error("Register failed", response);
     return { error: "Registration failed. Please try again." };
   }
 
@@ -41,6 +38,7 @@ export async function action({ request }: Route.ClientActionArgs) {
 }
 
 export default function RegisterRoute({ actionData }: Route.ComponentProps) {
+  const navigate = useNavigate();
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
     lastResult: actionData,
@@ -48,6 +46,15 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
       return parseWithZod(formData, { schema: UserRegisterPayloadSchema });
     },
   });
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const authenticated = await auth.getUser();
+      if (authenticated) return navigate("/");
+    };
+
+    checkAuth();
+  }, []);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
