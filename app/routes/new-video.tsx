@@ -1,5 +1,5 @@
 import type { Route } from "./+types/new-video";
-import { Form, redirect } from "react-router";
+import { Form, Link, redirect, useNavigate } from "react-router";
 import { Label } from "@radix-ui/react-label";
 import { FilePlus } from "lucide-react";
 
@@ -11,6 +11,8 @@ import { parseWithZod } from "@conform-to/zod";
 import { serverApiUrl } from "~/lib/api-server";
 import ky from "ky";
 import type { ResponseNewVideo } from "~/features/video/type";
+import { getSession } from "~/lib/sessions.server";
+import { Button } from "~/components/ui/button";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -20,6 +22,12 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (!session.has("userId")) {
+    return redirect("/login");
+  }
+
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
     schema: VideoFormSchema,
@@ -27,14 +35,18 @@ export async function action({ request }: Route.ActionArgs) {
   if (submission.status !== "success")
     return { error: "Failed to add new video" };
 
+  console.log({ submission });
+
   const video = await ky
     .post(`${serverApiUrl}/videos`, {
       credentials: "include",
-      headers: { "Content-Type": "application/json" },
+      headers: { Authorization: `Bearer ${session.get("accessToken")}` },
       json: submission.value,
     })
     .json<ResponseNewVideo>();
   if (!video) return { error: "Failed to add new video" };
+
+  console.log({ video });
 
   return { video };
 }
@@ -49,6 +61,8 @@ export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
     },
   });
 
+  const navigate = useNavigate();
+
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
       {error ? <div className="error">{error}</div> : null}
@@ -56,20 +70,26 @@ export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
       <div className="w-full max-w-sm md:max-w-3xl">
         <Card>
           <div className="py-3 px-6">
-            <div className="flex flex-row justify-between items-center mb-4">
-              <div className="flex flex-row m-2">
-                <div className="m-1">
-                  <FilePlus />
-                </div>
-                <h1 className="text-2xl font-bold">Register A Video</h1>
+            <div className="flex flex-row m-2 items-center justify-between">
+              <div className="inline-flex gap-1 items-center">
+                <FilePlus />
+                <h1 className="text-2xl font-bold">Add a new video</h1>
               </div>
-              {/* <ReviewButton
+              <Button
+                disabled={!actionData?.video?.platformVideoId}
+                onClick={() => {
+                  navigate(`/${video?.platformVideoId}`);
+                }}
+              >
+                Continue
+              </Button>
+            </div>
+            {/* <ReviewButton
                 isSaved={isSaved}
                 videoId={videoId}
                 title={videoData?.title}
                 thumbnailUrl={videoData?.thumbnailUrl}
               /> */}
-            </div>
             <div className="flex flex-row">
               <div className="grid grid-cols-1 flex-1/2">
                 <Form
@@ -100,12 +120,7 @@ export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
                     />
                   </div>
                   <div className="flex flex-row justify-between mt-10">
-                    <button
-                      type="submit"
-                      className={`rounded-full px-3 py-2 m-2 font-medium transition-colors ${"bg-sky-400 text-black hover:bg-sky-500"}`}
-                    >
-                      Save
-                    </button>
+                    <Button type="submit">Submit Video</Button>
                   </div>
                 </Form>
               </div>

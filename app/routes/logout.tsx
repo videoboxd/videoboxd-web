@@ -3,8 +3,19 @@ import type { Route } from "./+types/logout";
 import { destroySession, getSession } from "~/lib/sessions.server";
 import { Button } from "~/components/ui/button";
 
+export async function loader({ request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (!session.get("userId")) {
+    return redirect("/login");
+  }
+
+  return null;
+}
+
 export async function action({ request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
+
   return redirect("/login", {
     headers: { "Set-Cookie": await destroySession(session) },
   });

@@ -16,17 +16,19 @@ export async function loader({ request }: Route.LoaderArgs) {
     return redirect("/login");
   }
 
-  return { userId: session.get("userId") };
+  return {
+    userId: session.get("userId"),
+    accessToken: session.get("accessToken"),
+    refreshToken: session.get("refreshToken"),
+  };
 }
 
 export default function DashboardRoute({ loaderData }: Route.ComponentProps) {
-  const { userId } = loaderData;
-
   return (
     <div className="container py-10">
       <h1 className="text-2xl font-bold">Dashboard</h1>
       <p className="text-muted-foreground">Welcome to your dashboard</p>
-      <pre>{JSON.stringify({ userId }, null, 2)}</pre>
+      <pre>{JSON.stringify(loaderData, null, 2)}</pre>
     </div>
   );
 }

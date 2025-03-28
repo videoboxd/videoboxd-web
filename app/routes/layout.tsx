@@ -2,7 +2,7 @@ import { Outlet, ScrollRestoration } from "react-router";
 import { Footer } from "~/components/shared/footer";
 import { Navbar } from "~/components/shared/navbar";
 import type { Route } from "./+types/layout";
-import { getSession } from "~/lib/sessions.server";
+import { destroySession, getSession } from "~/lib/sessions.server";
 import { auth } from "~/lib/auth";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -10,6 +10,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const userId = session.get("userId");
   if (!userId) {
+    await destroySession(session);
     return { user: null };
   }
 

@@ -37,7 +37,7 @@ export type Auth = {
   getUser: (
     accessToken?: string,
     refreshToken?: string
-  ) => Promise<ResponseAuthMe>;
+  ) => Promise<ResponseAuthMe | null>;
   logout: () => Promise<User>;
 };
 
@@ -55,15 +55,20 @@ export const auth: Auth = {
   },
 
   getUser: async (accessToken, refreshToken) => {
-    console.log({ accessToken, refreshToken });
-
-    const response = await fetch(`${serverApiUrl}/auth/me`, {
-      headers: {
-        Cookie: `access_token=${accessToken}; refresh_token=${refreshToken};`,
-      },
-    });
-    const data: ResponseAuthMe = await response.json();
-    return data;
+    try {
+      const data = await ky
+        .get(`${serverApiUrl}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // Cookie: `access_token=${accessToken}; refresh_token=${refreshToken};`,
+          },
+        })
+        .json<ResponseAuthMe>();
+      return data;
+    } catch (error) {
+      console.log(error);
+      return null;
+    }
   },
 
   logout: async () => {

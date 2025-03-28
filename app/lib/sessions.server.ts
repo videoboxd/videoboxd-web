@@ -16,7 +16,7 @@ const { getSession, commitSession, destroySession } =
       name: "__session",
       // expires: new Date(Date.now() + 60_000),
       httpOnly: true,
-      maxAge: 60,
+      maxAge: 60 * 60 * 24 * 7,
       path: "/",
       sameSite: "lax",
       secrets: [String(process.env.SECRET)],
