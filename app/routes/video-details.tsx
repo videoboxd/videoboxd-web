@@ -1,59 +1,22 @@
-import { useEffect, useState } from "react";
-import { Link, useParams } from "react-router";
-import { Card, CardContent } from "~/components/ui/card";
-import { apiUrl } from "~/lib/api";
 import ky from "ky";
-import type { ResponseVideo } from "~/features/video/type";
-import { generateVideoSlug } from "~/lib/slug";
-import VideoNotFound from "~/features/video/components/VideoNotFound";
+import { Link } from "react-router";
+import { Card, CardContent } from "~/components/ui/card";
+import type { ResponseVideosIdentifier } from "~/features/video/type";
+import { serverApiUrl } from "~/lib/api-server";
+import type { Route } from "./+types/video-details";
 
-type VideoDetails = ResponseVideo;
+export async function loader({ params }: Route.LoaderArgs) {
+  const { platformVideoId } = params;
+  const video = await ky
+    .get(`${serverApiUrl}/videos/${platformVideoId}`)
+    .json<ResponseVideosIdentifier>();
+  return { video };
+}
 
-export default function VideoDetailsRoute() {
-  const { slug } = useParams();
-  const [video, setVideo] = useState<VideoDetails | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchVideoDetails = async () => {
-      try {
-        setIsLoading(true);
-        setError(null);
-        const response = await ky.get(`${apiUrl}/videos`).json<VideoDetails[]>();
-        const matchingVideo = response.find(video => {
-          const videoSlug = generateVideoSlug(video.title, video.uploadedAt || new Date());
-          return videoSlug === slug;
-        });
-        
-        if (!matchingVideo) {
-          throw new Error("Video not found");
-        }
-        
-        setVideo(matchingVideo);
-      } catch (err) {
-        setError("Failed to load video details");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (slug) {
-      fetchVideoDetails();
-    }
-  }, [slug]);
-
-  if (isLoading) {
-    return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="animate-pulse text-lg">Loading...</div>
-      </div>
-    );
-  }
-
-  if (error || !video) {
-    return <VideoNotFound error={error} />;
-  }
+export default function VideoDetailsRoute({
+  loaderData,
+}: Route.ComponentProps) {
+  const { video } = loaderData;
 
   return (
     <div className="container mx-auto py-8">
@@ -74,11 +37,14 @@ export default function VideoDetailsRoute() {
                 <span>{video.platform?.name}</span>
                 <span>•</span>
                 <span>
-                  {new Date(video.uploadedAt || new Date()).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                  {new Date(video.uploadedAt || new Date()).toLocaleDateString(
+                    "en-US",
+                    {
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
                 </span>
               </div>
             </div>
@@ -99,10 +65,7 @@ export default function VideoDetailsRoute() {
             </div>
 
             <div className="pt-4 flex gap-4">
-              <Link
-                to="/"
-                className="text-sm text-blue-500 hover:underline"
-              >
+              <Link to="/" className="text-sm text-blue-500 hover:underline">
                 Back to Home
               </Link>
               <a

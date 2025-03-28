@@ -10,15 +10,6 @@ export async function loader() {
 }
 
 export default function LayoutRoute({ loaderData }: Route.ComponentProps) {
-  useEffect(() => {
-    const checkAuth = async () => {
-      const authenticated = await auth.getUser();
-      return authenticated;
-    };
-
-    checkAuth();
-  }, []);
-
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar user={loaderData} />

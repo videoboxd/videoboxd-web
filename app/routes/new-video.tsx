@@ -1,17 +1,18 @@
 import type { Route } from "./+types/home";
-import { useState, useEffect, useRef } from "react";
-import { Form, useNavigate } from "react-router";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { Label } from "@radix-ui/react-label";
 import { FilePlus } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ky from "ky";
-import { apiUrl } from "~/lib/api";
+
+import { serverApiUrl } from "~/lib/api-server";
 import { videoFormSchema, extractYouTubeID } from "~/lib/video";
 import type { VideoFormValues } from "~/lib/video";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { Label } from "@radix-ui/react-label";
-import ReviewButton from "~/components/ui/review-button";
+import { ReviewButton } from "~/components/ui/review-button";
 import { checkVideoExists } from "~/lib/video";
 
 export function meta({}: Route.MetaArgs) {
@@ -26,7 +27,10 @@ export default function NewVideoRoute() {
   const [videoId, setVideoId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
-  const [videoData, setVideoData] = useState<{ title: string; thumbnailUrl: string } | null>(null);
+  const [videoData, setVideoData] = useState<{
+    title: string;
+    thumbnailUrl: string;
+  } | null>(null);
 
   const navigate = useNavigate();
 
@@ -36,7 +40,7 @@ export default function NewVideoRoute() {
     watch,
     formState: { errors },
   } = useForm<VideoFormValues>({
-    resolver: zodResolver(videoFormSchema)
+    resolver: zodResolver(videoFormSchema),
   });
   const originalUrl = watch("originalUrl", "");
 
@@ -48,20 +52,20 @@ export default function NewVideoRoute() {
       setIsSaved(false);
     }
   }, [originalUrl]);
-  
+
   useEffect(() => {
-    if(videoId) {
+    if (videoId) {
       const check = async () => {
         const data = await checkVideoExists(setIsSaved, videoId);
         console.log(data);
         if (data) {
           setVideoData({ title: data.title, thumbnailUrl: data.thumbnailUrl });
         }
-      }
+      };
       check();
       alert("This video is already registered.");
     }
-  }, [videoId])
+  }, [videoId]);
 
   const goBack = () => {
     navigate(-1);
@@ -75,11 +79,11 @@ export default function NewVideoRoute() {
     setIsSubmitting(true);
 
     const payload = {
-      ...data
+      ...data,
     };
 
     try {
-      const response = await ky.post(`${apiUrl}/videos`, {
+      const response = await ky.post(`${serverApiUrl}/videos`, {
         credentials: "include",
         headers: { "Content-Type": "application/json" },
         json: payload,
@@ -124,7 +128,7 @@ export default function NewVideoRoute() {
             </div>
             <div className="flex flex-row">
               <div className="grid grid-cols-1 flex-1/2">
-                <Form method="post" onSubmit={handleSubmit(onSubmit)}>
+                <form method="post" onSubmit={handleSubmit(onSubmit)}>
                   <div className="flex flex-col">
                     <Label className="m-2">Video Link</Label>
                     <Input
@@ -134,7 +138,9 @@ export default function NewVideoRoute() {
                       className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                     />
                     {errors.originalUrl && (
-                      <p className="text-red-500 m-2">{errors.originalUrl.message}</p>
+                      <p className="text-red-500 m-2">
+                        {errors.originalUrl.message}
+                      </p>
                     )}
                   </div>
                   <div className="flex flex-col">
@@ -157,7 +163,11 @@ export default function NewVideoRoute() {
                           : "bg-sky-400 text-black hover:bg-sky-500"
                       }`}
                     >
-                      {isSaved ? "✔ Saved" : isSubmitting ? "Saving..." : "Save"}
+                      {isSaved
+                        ? "✔ Saved"
+                        : isSubmitting
+                        ? "Saving..."
+                        : "Save"}
                     </button>
                     <button
                       type="button"
@@ -167,7 +177,7 @@ export default function NewVideoRoute() {
                       Back
                     </button>
                   </div>
-                </Form>
+                </form>
               </div>
               <div className="flex-1/2 p-4">
                 <div className="flex border border-white w-full aspect-[16/9] m-3 items-center justify-center">

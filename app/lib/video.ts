@@ -1,6 +1,6 @@
 import { z } from "zod";
 import ky from "ky";
-import { apiUrl } from "./api";
+import { serverApiUrl } from "./api-server";
 
 export const youtubeRegex =
   /(?:youtube\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -11,7 +11,7 @@ export const videoFormSchema = z.object({
     .min(1, "YouTube URL is required")
     .regex(youtubeRegex, "Invalid YouTube URL"),
   // platform: z.string().default("youtube"),
-  categorySlug: z.string()
+  categorySlug: z.string(),
 });
 
 export type VideoFormValues = z.infer<typeof videoFormSchema>;
@@ -21,11 +21,14 @@ export function extractYouTubeID(url: string) {
   return match ? match[1] : null;
 }
 
-export const checkVideoExists = async (setIsSaved: (value: boolean) => void, videoId: string) => {
+export const checkVideoExists = async (
+  setIsSaved: (value: boolean) => void,
+  videoId: string
+) => {
   if (!videoId) return;
 
   try {
-    const response = await ky.get(`${apiUrl}/videos/${videoId}`, {
+    const response = await ky.get(`${serverApiUrl}/videos/${videoId}`, {
       credentials: "include",
     });
 
@@ -39,5 +42,5 @@ export const checkVideoExists = async (setIsSaved: (value: boolean) => void, vid
   } catch (error) {
     console.error("Error checking video existance", error);
     setIsSaved(false);
-  };
-}
+  }
+};

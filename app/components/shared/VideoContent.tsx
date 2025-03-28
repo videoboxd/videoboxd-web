@@ -3,12 +3,11 @@ import { Icon } from "@iconify/react";
 
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import type { ResponseVideo } from "~/features/video/type";
-import { generateVideoSlug } from "~/lib/slug";
 
 export default function VideoContent({ video }: { video: ResponseVideo }) {
   return (
     <li className="bg-[#252525] rounded-lg overflow-hidden max-w-[420px]">
-      <Link to={`/video-details/${generateVideoSlug(video.title, video.uploadedAt || '')}`} className="block">
+      <Link to={video.platformVideoId} className="block">
         {video.thumbnailUrl && (
           <img src={video.thumbnailUrl} alt={video.title} />
         )}

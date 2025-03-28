@@ -1,6 +1,6 @@
 import ky from "ky";
 import type { Route } from "./+types/home";
-import { apiUrl } from "~/lib/api";
+import { serverApiUrl } from "~/lib/api-server";
 import SearchForm from "~/components/shared/SearchFrom";
 import VideoContent from "~/components/shared/VideoContent";
 import type { ResponseVideos } from "~/features/video/type";
@@ -13,7 +13,7 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader() {
-  const videos = await ky.get(`${apiUrl}/videos`).json<ResponseVideos>();
+  const videos = await ky.get(`${serverApiUrl}/videos`).json<ResponseVideos>();
   return { videos };
 }
 

@@ -1,13 +1,12 @@
 import ky from "ky";
 import { z } from "zod";
+import type {
+  ResponseAuthMe,
+  ResponseLogin,
+  ResponseRegister,
+} from "~/features/user/type";
 
-import { apiUrl } from "~/lib/api";
-
-export type ApiResponse<T> = {
-  success: boolean;
-  message: string;
-  data: T;
-};
+import { serverApiUrl } from "~/lib/api-server";
 
 export type User = {
   id: string;
@@ -33,74 +32,54 @@ export type UserLoginPayload = z.infer<typeof UserLoginPayloadSchema>;
 export type UserRegisterPayload = z.infer<typeof UserRegisterPayloadSchema>;
 
 export type Auth = {
-  isAuthenticated: boolean;
-  register: (userRegister: UserRegisterPayload) => Promise<boolean>;
-  login: (userLogin: UserLoginPayload) => Promise<boolean>;
-  getUser(): Promise<User | null>;
-  logout: () => void;
+  register: (data: UserRegisterPayload) => any;
+  login: (data: UserLoginPayload) => any;
+  getUser: () => any;
+  logout: () => any;
 };
 
 export const auth: Auth = {
-  isAuthenticated: false,
-  register: async (userRegister: UserRegisterPayload) => {
-    try {
-      const response = await ky
-        .post(`${apiUrl}/auth/register`, { json: userRegister })
-        .json<ApiResponse<User>>();
-
-      if (!response) return false;
-
-      return true;
-    } catch (error) {
-      return false;
-    }
+  register: async (data: UserRegisterPayload) => {
+    return await ky
+      .post(`${serverApiUrl}/auth/register`, { json: data })
+      .json<ResponseRegister>();
   },
-  login: async (userLogin: UserLoginPayload) => {
+
+  login: async (data: UserLoginPayload) => {
     try {
-      const response = await ky
-        .post(`${apiUrl}/auth/login`, {
-          json: userLogin,
+      return await ky
+        .post(`${serverApiUrl}/auth/login`, {
+          json: data,
           credentials: "include",
           mode: "cors",
         })
-        .json<ApiResponse<User>>();
-
-      auth.isAuthenticated = true;
-
-      return true;
+        .json<ResponseLogin>();
     } catch (error) {
-      auth.isAuthenticated = false;
+      console.error(error);
       return false;
     }
   },
+
   getUser: async () => {
     try {
-      const response = await ky
-        .get(`${apiUrl}/auth/me`, {
-          credentials: "include",
-        })
-        .json<User>();
-
-      auth.isAuthenticated = true;
-
-      return response;
+      return await ky
+        .get(`${serverApiUrl}/auth/me`, { credentials: "include" })
+        .json<ResponseAuthMe>();
     } catch (error) {
-      auth.isAuthenticated = false;
+      console.error(error);
       return null;
     }
   },
+
   logout: async () => {
     try {
-      const response = await ky
-        .delete(`${apiUrl}/auth/logout`, {
+      return await ky
+        .delete(`${serverApiUrl}/auth/logout`, {
           credentials: "include",
         })
         .json<User>();
-
-      auth.isAuthenticated = false;
-
-      return response;
     } catch (error) {
+      console.error(error);
       return null;
     }
   },

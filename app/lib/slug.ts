@@ -1,7 +1,11 @@
 /**
+ * TODO: Fix this / move this to backend API
  * Generates a URL-friendly slug from a video title and upload date
  */
-export function generateVideoSlug(title: string, uploadedAt: string | Date): string {
+export function generateVideoSlug(
+  title: string,
+  uploadedAt: string | Date
+): string {
   // Convert date to year
   const year = new Date(uploadedAt).getFullYear();
 
@@ -9,13 +13,13 @@ export function generateVideoSlug(title: string, uploadedAt: string | Date): str
   const words = title
     .toLowerCase()
     // Replace special characters with spaces
-    .replace(/[^\w\s-]/g, ' ')
+    .replace(/[^\w\s-]/g, " ")
     // Replace multiple spaces with single space
-    .replace(/\s+/g, ' ')
+    .replace(/\s+/g, " ")
     .trim()
-    .split(' ')
+    .split(" ")
     .slice(0, 3);
 
   // Join words with hyphens and append year
-  return `${words.join('-')}-${year}`;
+  return `${words.join("-")}-${year}`;
 }

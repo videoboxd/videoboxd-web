@@ -1,14 +1,12 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router";
-import { Card, CardContent } from "~/components/ui/card";
-import type { Route } from "./+types/home";
-import { Label } from "@radix-ui/react-label";
-import { Input } from "~/components/ui/input";
-import { Button } from "~/components/ui/button";
-import { Form, Link, redirect } from "react-router";
-import { auth, UserRegisterPayloadSchema } from "~/lib/auth";
-import { parseWithZod } from "@conform-to/zod";
 import { useForm } from "@conform-to/react";
+import { parseWithZod } from "@conform-to/zod";
+import { Label } from "@radix-ui/react-label";
+import { Form, Link, redirect } from "react-router";
+import { Button } from "~/components/ui/button";
+import { Card, CardContent } from "~/components/ui/card";
+import { Input } from "~/components/ui/input";
+import { auth, UserRegisterPayloadSchema } from "~/lib/auth";
+import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -17,19 +15,18 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader() {
-  return null;
-}
-
 export async function action({ request }: Route.ClientActionArgs) {
-  let formData = await request.formData();
+  const formData = await request.formData();
   const submission = parseWithZod(formData, {
     schema: UserRegisterPayloadSchema,
   });
-
   if (submission.status !== "success") return submission.reply();
 
+  console.log("value:", submission.value);
+
   const response = await auth.register(submission.value);
+  console.log({ response });
+
   if (!response) {
     return { error: "Registration failed. Please try again." };
   }
@@ -38,7 +35,6 @@ export async function action({ request }: Route.ClientActionArgs) {
 }
 
 export default function RegisterRoute({ actionData }: Route.ComponentProps) {
-  const navigate = useNavigate();
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
     lastResult: actionData,
@@ -46,15 +42,6 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
       return parseWithZod(formData, { schema: UserRegisterPayloadSchema });
     },
   });
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const authenticated = await auth.getUser();
-      if (authenticated) return navigate("/");
-    };
-
-    checkAuth();
-  }, []);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
@@ -68,7 +55,7 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                 onSubmit={form.onSubmit}
                 className="p-6 md:p-8"
               >
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-3">
                   <div className="flex flex-col items-center text-center">
                     <h1 className="text-2xl font-bold">
                       Create Videoboxd Account
@@ -86,7 +73,9 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                       type="email"
                       placeholder="m@example.com"
                     />
-                    <p className="text-red-400">{fields.email.errors}</p>
+                    <p className="text-red-400 text-xs">
+                      {fields.email.errors}
+                    </p>
                   </div>
                   <div className="grid gap-2">
                     <div className="flex items-center">
@@ -99,7 +88,9 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                       placeholder="******"
                       autoComplete="off"
                     />
-                    <p className="text-red-400">{fields.password.errors}</p>
+                    <p className="text-red-400 text-xs">
+                      {fields.password.errors}
+                    </p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="fullname">Full Name</Label>
@@ -107,9 +98,11 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                       id="fullname"
                       name="fullName"
                       type="name"
-                      placeholder="Sandhika Galih"
+                      placeholder="Example User"
                     />
-                    <p className="text-red-400">{fields.fullName.errors}</p>
+                    <p className="text-red-400 text-xs">
+                      {fields.fullName.errors}
+                    </p>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="username">Username</Label>
@@ -117,9 +110,11 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
                       id="username"
                       name="username"
                       type="text"
-                      placeholder="sandhika"
+                      placeholder="example"
                     />
-                    <p className="text-red-400">{fields.username.errors}</p>
+                    <p className="text-red-400 text-xs">
+                      {fields.username.errors}
+                    </p>
                   </div>
                   <Button type="submit" className="w-full">
                     Register
