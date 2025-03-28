@@ -57,7 +57,6 @@ export default function NewVideoRoute() {
     if (videoId) {
       const check = async () => {
         const data = await checkVideoExists(setIsSaved, videoId);
-        console.log(data);
         if (data) {
           setVideoData({ title: data.title, thumbnailUrl: data.thumbnailUrl });
         }

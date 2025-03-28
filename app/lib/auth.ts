@@ -40,19 +40,20 @@ export type Auth = {
 
 export const auth: Auth = {
   register: async (data: UserRegisterPayload) => {
-    return await ky
-      .post(`${serverApiUrl}/auth/register`, { json: data })
-      .json<ResponseRegister>();
+    try {
+      return await ky
+        .post(`${serverApiUrl}/auth/register`, { json: data })
+        .json<ResponseRegister>();
+    } catch (error) {
+      console.error(error);
+      return false;
+    }
   },
 
   login: async (data: UserLoginPayload) => {
     try {
       return await ky
-        .post(`${serverApiUrl}/auth/login`, {
-          json: data,
-          credentials: "include",
-          mode: "cors",
-        })
+        .post(`${serverApiUrl}/auth/login`, { json: data })
         .json<ResponseLogin>();
     } catch (error) {
       console.error(error);
@@ -62,9 +63,7 @@ export const auth: Auth = {
 
   getUser: async () => {
     try {
-      return await ky
-        .get(`${serverApiUrl}/auth/me`, { credentials: "include" })
-        .json<ResponseAuthMe>();
+      return await ky.get(`${serverApiUrl}/auth/me`).json<ResponseAuthMe>();
     } catch (error) {
       console.error(error);
       return null;
@@ -73,11 +72,7 @@ export const auth: Auth = {
 
   logout: async () => {
     try {
-      return await ky
-        .delete(`${serverApiUrl}/auth/logout`, {
-          credentials: "include",
-        })
-        .json<User>();
+      return await ky.delete(`${serverApiUrl}/auth/logout`).json<User>();
     } catch (error) {
       console.error(error);
       return null;

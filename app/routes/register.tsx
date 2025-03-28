@@ -22,14 +22,8 @@ export async function action({ request }: Route.ClientActionArgs) {
   });
   if (submission.status !== "success") return submission.reply();
 
-  console.log("value:", submission.value);
-
   const response = await auth.register(submission.value);
-  console.log({ response });
-
-  if (!response) {
-    return { error: "Registration failed. Please try again." };
-  }
+  if (!response) return { error: "Registration failed. Please try again." };
 
   return redirect("/login");
 }

@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { Form, Link, useNavigate } from "react-router";
+import { Form, Link, redirect } from "react-router";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@radix-ui/react-label";
@@ -21,12 +20,19 @@ export async function loader() {
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
-  return null;
+  const formData = await request.formData();
+  const submission = parseWithZod(formData, {
+    schema: UserLoginPayloadSchema,
+  });
+  if (submission.status !== "success") return submission.reply();
+
+  const response = await auth.login(submission.value);
+  if (!response) return { error: "Registration failed. Please try again." };
+
+  return redirect("/dashboard");
 }
 
 export default function LoginRoute({ actionData }: Route.ComponentProps) {
-  const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
     lastResult: actionData,
@@ -34,39 +40,6 @@ export default function LoginRoute({ actionData }: Route.ComponentProps) {
       return parseWithZod(formData, { schema: UserLoginPayloadSchema });
     },
   });
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      const authenticated = await auth.getUser();
-      if (authenticated) return navigate("/");
-    };
-
-    checkAuth();
-  }, []);
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    const formData = new FormData(event.currentTarget);
-    const submission = parseWithZod(formData, {
-      schema: UserLoginPayloadSchema,
-    });
-
-    if (submission.status !== "success") {
-      return;
-    }
-
-    setIsLoading(true);
-    const success = await auth.login(submission.value);
-    setIsLoading(false);
-
-    if (success) {
-      alert("Login Successfully");
-      navigate("/");
-    } else {
-      alert("Username or password is wrong");
-    }
-  };
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
@@ -76,7 +49,8 @@ export default function LoginRoute({ actionData }: Route.ComponentProps) {
             <CardContent className="grid p-0 md:grid-cols-2">
               <Form
                 method="post"
-                onSubmit={handleSubmit}
+                id={form.id}
+                onSubmit={form.onSubmit}
                 className="p-6 md:p-8"
               >
                 <div className="flex flex-col gap-6">
@@ -110,19 +84,12 @@ export default function LoginRoute({ actionData }: Route.ComponentProps) {
                       autoComplete="current-password"
                     />
                   </div>
-                  <Button type="submit" className="w-full" disabled={isLoading}>
-                    {!isLoading ? (
-                      "Login"
-                    ) : (
-                      <>
-                        <span className="animate-spin">.</span>
-                        <span>Loading..</span>
-                      </>
-                    )}
+                  <Button type="submit" className="w-full">
+                    Login
                   </Button>
 
                   <div className="text-center text-sm">
-                    Don&apos;t have an account?{" "}
+                    Don't have an account?{" "}
                     <Link
                       to={`/register`}
                       className="underline underline-offset-4"
