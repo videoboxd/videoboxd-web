@@ -12,6 +12,7 @@ import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "@radix-ui/react-label";
 import ReviewButton from "~/components/ui/review-button";
+import { checkVideoExists } from "~/lib/video";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -42,7 +43,18 @@ export default function NewVideoRoute() {
   useEffect(() => {
     const validId = extractYouTubeID(originalUrl);
     setVideoId(validId);
+
+    if (originalUrl.trim() === "") {
+      setIsSaved(false);
+    }
   }, [originalUrl]);
+  
+  useEffect(() => {
+    if(videoId) {
+      checkVideoExists(setIsSaved, videoId);
+      alert("This video is already registered.");
+    }
+  }, [videoId])
 
   const goToHome = () => {
     navigate("/");
@@ -53,6 +65,10 @@ export default function NewVideoRoute() {
   };
 
   const onSubmit = async (data: any) => {
+    if (isSaved) {
+      return;
+    }
+
     setIsSubmitting(true);
 
     const payload = {
@@ -122,6 +138,7 @@ export default function NewVideoRoute() {
                       type="text"
                       placeholder="Video Category"
                       className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
+                      disabled={isSaved}
                     />
                   </div>
                   <div className="flex flex-row justify-between mt-10">
