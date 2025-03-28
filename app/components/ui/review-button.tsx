@@ -1,11 +1,20 @@
 import { useNavigate } from "react-router";
 
-function ReviewButton({ isSaved }: { isSaved: boolean }) {
+function ReviewButton({ isSaved, videoId, title, thumbnailUrl }: { isSaved: boolean, videoId: string | null, title: string, thumbnailUrl: string }) {
     const navigate = useNavigate();
+
+    const handleReview = () => {
+        if (isSaved && videoId) {
+            navigate(`/review/${videoId}`, {
+                state: { title, thumbnailUrl },
+            });
+        }
+    };
 
     return (
         <button
-            onClick={() => navigate("/review")}
+            onClick={handleReview}
+            disabled={!isSaved || !videoId}
             className={`relative flex items-start px-3 py-2 m-2 font-medium transition-colors clip-path-button
                     ${
                         isSaved

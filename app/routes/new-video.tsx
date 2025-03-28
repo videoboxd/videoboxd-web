@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import ky from "ky";
 import { apiUrl } from "~/lib/api";
-import { youtubeRegex, videoFormSchema, extractYouTubeID } from "~/lib/video";
+import { videoFormSchema, extractYouTubeID } from "~/lib/video";
 import type { VideoFormValues } from "~/lib/video";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -26,6 +26,7 @@ export default function NewVideoRoute() {
   const [videoId, setVideoId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
+  const [videoData, setVideoData] = useState<{ title: string; thumbnailUrl: string } | null>(null);
 
   const navigate = useNavigate();
 
@@ -34,7 +35,6 @@ export default function NewVideoRoute() {
     handleSubmit,
     watch,
     formState: { errors },
-    reset,
   } = useForm<VideoFormValues>({
     resolver: zodResolver(videoFormSchema)
   });
@@ -51,14 +51,17 @@ export default function NewVideoRoute() {
   
   useEffect(() => {
     if(videoId) {
-      checkVideoExists(setIsSaved, videoId);
+      const check = async () => {
+        const data = await checkVideoExists(setIsSaved, videoId);
+        console.log(data);
+        if (data) {
+          setVideoData({ title: data.title, thumbnailUrl: data.thumbnailUrl });
+        }
+      }
+      check();
       alert("This video is already registered.");
     }
   }, [videoId])
-
-  const goToHome = () => {
-    navigate("/");
-  };
 
   const goBack = () => {
     navigate(-1);
@@ -114,6 +117,9 @@ export default function NewVideoRoute() {
               </div>
               <ReviewButton
                 isSaved={isSaved}
+                videoId={videoId}
+                title={videoData?.title}
+                thumbnailUrl={videoData?.thumbnailUrl}
               />
             </div>
             <div className="flex flex-row">

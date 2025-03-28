@@ -30,7 +30,9 @@ export const checkVideoExists = async (setIsSaved: (value: boolean) => void, vid
     });
 
     if (response.ok) {
-      setIsSaved(true)
+      setIsSaved(true);
+      const data = await response.json();
+      return data;
     } else {
       setIsSaved(false);
     }

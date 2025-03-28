@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Card } from "~/components/ui/card"
 import { Label } from "@radix-ui/react-label"
 import { TextArea } from "~/components/ui/textarea"
-import { Form } from "react-router"
+import { Form, useLocation } from "react-router"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useNavigate } from "react-router"
@@ -11,6 +11,8 @@ import { reviewFormSchema } from "~/lib/review"
 import type { ReviewFormValues } from "~/lib/review"
 
 export default function NewReviewRoute() {
+    const location = useLocation();
+    const { title, thumbnailUrl } = location.state || {};
     const [rating, setRating] = useState(0);
 
     const {
@@ -40,6 +42,10 @@ export default function NewReviewRoute() {
                 <h1 className="text-2xl font-bold">Submit Review</h1>
             </div>
               <div className="grid grid-cols-1">
+                <div className="p-3">
+                  <img src={thumbnailUrl} alt="video-thumbnail" className="p-2 justify-self-center" />
+                  <h1 className="p-2 text-center">{title}</h1>
+                </div>
                 <Form method="post" onSubmit={handleSubmit(onSubmit)}>
                   <div className="flex flex-col">
                     <Label className="m-2">Review</Label>
