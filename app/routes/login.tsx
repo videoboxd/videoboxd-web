@@ -1,12 +1,13 @@
-import { Form, Link, redirect } from "react-router";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@radix-ui/react-label";
+import { data, Form, Link, redirect } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { auth, UserLoginPayloadSchema } from "~/lib/auth";
-import type { Route } from "./+types/home";
+import { commitSession, getSession } from "~/lib/sessions.server";
+import type { Route } from "./+types/login";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,24 +16,50 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader() {
-  return null;
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (session.has("userId")) {
+    return redirect("/dashboard");
+  }
+
+  return data(
+    { error: session.get("error") },
+    { headers: { "Set-Cookie": await commitSession(session) } }
+  );
 }
 
 export async function action({ request }: Route.ClientActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
     schema: UserLoginPayloadSchema,
   });
   if (submission.status !== "success") return submission.reply();
 
-  const response = await auth.login(submission.value);
-  if (!response) return { error: "Registration failed. Please try again." };
+  const user = await auth.login(submission.value);
+  if (!user) {
+    session.flash("error", "Invalid username/password");
+    // Redirect back to the login page with errors.
+    return redirect("/login", {
+      headers: { "Set-Cookie": await commitSession(session) },
+    });
+  }
 
-  return redirect("/dashboard");
+  session.set("userId", user.id);
+
+  return redirect("/dashboard", {
+    headers: { "Set-Cookie": await commitSession(session) },
+  });
 }
 
-export default function LoginRoute({ actionData }: Route.ComponentProps) {
+export default function LoginRoute({
+  loaderData,
+  actionData,
+}: Route.ComponentProps) {
+  const { error } = loaderData;
+
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
     lastResult: actionData,
@@ -43,6 +70,8 @@ export default function LoginRoute({ actionData }: Route.ComponentProps) {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+      {error ? <div className="error">{error}</div> : null}
+
       <div className="w-full max-w-sm md:max-w-3xl">
         <div className="flex flex-col gap-6">
           <Card className="overflow-hidden">

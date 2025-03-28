@@ -1,9 +1,9 @@
 import ky from "ky";
-import type { Route } from "./+types/home";
-import { serverApiUrl } from "~/lib/api-server";
 import SearchForm from "~/components/shared/SearchFrom";
 import VideoContent from "~/components/shared/VideoContent";
 import type { ResponseVideos } from "~/features/video/type";
+import { serverApiUrl } from "~/lib/api-server";
+import type { Route } from "./+types/home";
 
 export function meta({}: Route.MetaArgs) {
   return [

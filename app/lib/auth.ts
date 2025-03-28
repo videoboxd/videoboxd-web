@@ -32,50 +32,30 @@ export type UserLoginPayload = z.infer<typeof UserLoginPayloadSchema>;
 export type UserRegisterPayload = z.infer<typeof UserRegisterPayloadSchema>;
 
 export type Auth = {
-  register: (data: UserRegisterPayload) => any;
-  login: (data: UserLoginPayload) => any;
-  getUser: () => any;
-  logout: () => any;
+  register: (data: UserRegisterPayload) => Promise<ResponseRegister>;
+  login: (data: UserLoginPayload) => Promise<ResponseLogin>;
+  getUser: () => Promise<ResponseAuthMe>;
+  logout: () => Promise<User>;
 };
 
 export const auth: Auth = {
   register: async (data: UserRegisterPayload) => {
-    try {
-      return await ky
-        .post(`${serverApiUrl}/auth/register`, { json: data })
-        .json<ResponseRegister>();
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+    return await ky
+      .post(`${serverApiUrl}/auth/register`, { json: data })
+      .json<ResponseRegister>();
   },
 
   login: async (data: UserLoginPayload) => {
-    try {
-      return await ky
-        .post(`${serverApiUrl}/auth/login`, { json: data })
-        .json<ResponseLogin>();
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
+    return await ky
+      .post(`${serverApiUrl}/auth/login`, { json: data })
+      .json<ResponseLogin>();
   },
 
   getUser: async () => {
-    try {
-      return await ky.get(`${serverApiUrl}/auth/me`).json<ResponseAuthMe>();
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+    return await ky.get(`${serverApiUrl}/auth/me`).json<ResponseAuthMe>();
   },
 
   logout: async () => {
-    try {
-      return await ky.delete(`${serverApiUrl}/auth/logout`).json<User>();
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
+    return await ky.delete(`${serverApiUrl}/auth/logout`).json<User>();
   },
 };

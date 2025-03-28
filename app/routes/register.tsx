@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { auth, UserRegisterPayloadSchema } from "~/lib/auth";
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/register";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -31,7 +31,7 @@ export async function action({ request }: Route.ClientActionArgs) {
 export default function RegisterRoute({ actionData }: Route.ComponentProps) {
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
-    lastResult: actionData,
+    // lastResult: actionData,
     onValidate({ formData }) {
       return parseWithZod(formData, { schema: UserRegisterPayloadSchema });
     },

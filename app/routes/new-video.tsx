@@ -1,4 +1,4 @@
-import type { Route } from "./+types/home";
+import type { Route } from "./+types/new-video";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router";
 import { Label } from "@radix-ui/react-label";

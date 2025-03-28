@@ -1,6 +1,6 @@
 import { z } from "zod";
 import ky from "ky";
-import { serverApiUrl } from "./api-server";
+import { clientApiUrl } from "./api-client";
 
 export const youtubeRegex =
   /(?:youtube\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
@@ -28,7 +28,7 @@ export const checkVideoExists = async (
   if (!videoId) return;
 
   try {
-    const response = await ky.get(`${serverApiUrl}/videos/${videoId}`, {
+    const response = await ky.get(`${clientApiUrl}/videos/${videoId}`, {
       credentials: "include",
     });
 
