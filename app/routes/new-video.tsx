@@ -11,7 +11,7 @@ import type { VideoFormValues } from "~/lib/video";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { Label } from "@radix-ui/react-label";
-import { Select } from "~/components/ui/select";
+import ReviewButton from "~/components/ui/review-button";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -24,6 +24,7 @@ export default function NewVideoRoute() {
   // FIXME: Use react-hook-form or Conform
   const [videoId, setVideoId] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
 
   const navigate = useNavigate();
 
@@ -67,9 +68,7 @@ export default function NewVideoRoute() {
 
       if (response.ok) {
         alert("Succesfully submitted new video");
-        console.log(response)
-        reset();
-        goBack();
+        setIsSaved(true);
       } else {
         const errorData = await response.json().catch(() => null);
         console.error("Error response:", errorData);
@@ -90,13 +89,16 @@ export default function NewVideoRoute() {
       <div className="w-full max-w-sm md:max-w-3xl">
         <Card>
           <div className="py-3 px-6">
-            <div className="flex flex-row justify-center mb-4">
+            <div className="flex flex-row justify-between items-center mb-4">
               <div className="flex flex-row m-2">
                 <div className="m-1">
                   <FilePlus />
                 </div>
                 <h1 className="text-2xl font-bold">Register A Video</h1>
               </div>
+              <ReviewButton
+                isSaved={isSaved}
+              />
             </div>
             <div className="flex flex-row">
               <div className="grid grid-cols-1 flex-1/2">
@@ -125,21 +127,21 @@ export default function NewVideoRoute() {
                   <div className="flex flex-row justify-between mt-10">
                     <button
                       type="submit"
-                      disabled={isSubmitting}
-                      className={`bg-sky-400 rounded-full px-3 py-2 m-2 text-black font-medium ${
-                        isSubmitting
-                          ? "opacity-50 cursor-not-allowed"
-                          : "hover:bg-sky-500 transition-colors"
+                      disabled={isSubmitting || isSaved}
+                      className={`rounded-full px-3 py-2 m-2 font-medium transition-colors ${
+                        isSaved
+                          ? "bg-gray-500 text-white cursor-not-allowed"
+                          : "bg-sky-400 text-black hover:bg-sky-500"
                       }`}
                     >
-                      {isSubmitting ? "Saving..." : "Save"}
+                      {isSaved ? "✔ Saved" : isSubmitting ? "Saving..." : "Save"}
                     </button>
                     <button
                       type="button"
                       onClick={goBack}
                       className="bg-gray-500 rounded-full px-3 py-2 m-2 text-white font-medium hover:bg-gray-600 transition-colors"
                     >
-                      Cancel
+                      Back
                     </button>
                   </div>
                 </Form>

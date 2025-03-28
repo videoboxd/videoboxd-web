@@ -36,7 +36,7 @@ export default function NewReviewRoute() {
       <div className="w-full max-w-sm md:max-w-3xl">
         <Card>
           <div className="py-3 px-6">
-            <div className="flex flex-row justify-center mb-4">
+            <div className="flex flex-row justify-between mb-4">
                 <h1 className="text-2xl font-bold">Submit Review</h1>
             </div>
               <div className="grid grid-cols-1">
