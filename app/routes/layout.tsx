@@ -19,7 +19,7 @@ export default function LayoutRoute({ loaderData }: Route.ComponentProps) {
   useEffect(() => {
     const checkAuth = async () => {
       const authenticated = await auth.getUser();
-      if (authenticated) return navigate("/");
+      if (authenticated  && location.pathname === "/login") return navigate("/");
     };
 
     checkAuth();

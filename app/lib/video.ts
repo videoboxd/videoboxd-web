@@ -8,7 +8,8 @@ export const videoFormSchema = z.object({
     .string()
     .min(1, "YouTube URL is required")
     .regex(youtubeRegex, "Invalid YouTube URL"),
-  platform: z.string().default("youtube"),
+  // platform: z.string().default("youtube"),
+  categorySlug: z.string()
 });
 
 export type VideoFormValues = z.infer<typeof videoFormSchema>;

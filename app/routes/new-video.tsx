@@ -34,10 +34,7 @@ export default function NewVideoRoute() {
     formState: { errors },
     reset,
   } = useForm<VideoFormValues>({
-    resolver: zodResolver(videoFormSchema),
-    defaultValues: {
-      platform: "youtube",
-    },
+    resolver: zodResolver(videoFormSchema)
   });
   const originalUrl = watch("originalUrl", "");
 
@@ -58,20 +55,19 @@ export default function NewVideoRoute() {
     setIsSubmitting(true);
 
     const payload = {
-      ...data,
-      userId: "01JNYFWJKVV32X3MRP7R2YQGES",
-      platformVideoId: videoId,
-      thumbnail: `https://img.youtube.com/vi/${videoId}/hqdefault.jpg`,
+      ...data
     };
 
     try {
       const response = await ky.post(`${apiUrl}/videos`, {
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         json: payload,
-        throwHttpErrors: false,
       });
 
       if (response.ok) {
         alert("Succesfully submitted new video");
+        console.log(response)
         reset();
         goBack();
       } else {
@@ -118,13 +114,13 @@ export default function NewVideoRoute() {
                     )}
                   </div>
                   <div className="flex flex-col">
-                    <Label className="m-2">Platform</Label>
-                    <Select
-                      {...register("platform")}
+                    <Label className="m-2">Category</Label>
+                    <Input
+                      {...register("categorySlug")}
+                      type="text"
+                      placeholder="Video Category"
                       className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
-                    >
-                      <option>youtube</option>
-                    </Select>
+                    />
                   </div>
                   <div className="flex flex-row justify-between mt-10">
                     <button
