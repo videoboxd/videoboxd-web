@@ -8,3 +8,6 @@ export type ResponseVideo = ElementType<ResponseVideos>;
 
 export type ResponseVideosIdentifier =
   paths["/videos/{identifier}"]["get"]["responses"][200]["content"]["application/json"];
+
+export type ResponseNewVideo =
+  paths["/videos"]["post"]["responses"][201]["content"]["application/json"];

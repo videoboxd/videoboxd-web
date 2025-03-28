@@ -34,7 +34,10 @@ export type UserRegisterPayload = z.infer<typeof UserRegisterPayloadSchema>;
 export type Auth = {
   register: (data: UserRegisterPayload) => Promise<ResponseRegister>;
   login: (data: UserLoginPayload) => Promise<ResponseLogin>;
-  getUser: () => Promise<ResponseAuthMe>;
+  getUser: (
+    accessToken?: string,
+    refreshToken?: string
+  ) => Promise<ResponseAuthMe>;
   logout: () => Promise<User>;
 };
 
@@ -51,8 +54,16 @@ export const auth: Auth = {
       .json<ResponseLogin>();
   },
 
-  getUser: async () => {
-    return await ky.get(`${serverApiUrl}/auth/me`).json<ResponseAuthMe>();
+  getUser: async (accessToken, refreshToken) => {
+    console.log({ accessToken, refreshToken });
+
+    const response = await fetch(`${serverApiUrl}/auth/me`, {
+      headers: {
+        Cookie: `access_token=${accessToken}; refresh_token=${refreshToken};`,
+      },
+    });
+    const data: ResponseAuthMe = await response.json();
+    return data;
   },
 
   logout: async () => {

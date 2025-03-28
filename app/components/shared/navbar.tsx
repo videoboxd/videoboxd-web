@@ -22,8 +22,12 @@ export function Navbar({ user }: { user: ResponseAuthMe | null }) {
 
         {user && (
           <div className="hidden items-center gap-8 text-base font-semibold md:flex">
+            <p>{user.fullName}</p>
             <Button asChild>
               <Link to="/new">New Video</Link>
+            </Button>
+            <Button asChild>
+              <Link to="/logout">Logout</Link>
             </Button>
           </div>
         )}

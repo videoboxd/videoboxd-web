@@ -5,7 +5,7 @@ import { clientApiUrl } from "./api-client";
 export const youtubeRegex =
   /(?:youtube\.com\/(?:.*[?&]v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
 
-export const videoFormSchema = z.object({
+export const VideoFormSchema = z.object({
   originalUrl: z
     .string()
     .min(1, "YouTube URL is required")
@@ -14,7 +14,7 @@ export const videoFormSchema = z.object({
   categorySlug: z.string(),
 });
 
-export type VideoFormValues = z.infer<typeof videoFormSchema>;
+export type VideoFormValues = z.infer<typeof VideoFormSchema>;
 
 export function extractYouTubeID(url: string) {
   const match = url.match(youtubeRegex);

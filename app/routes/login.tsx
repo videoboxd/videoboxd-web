@@ -48,6 +48,8 @@ export async function action({ request }: Route.ClientActionArgs) {
   }
 
   session.set("userId", user.id);
+  session.set("accessToken", user.accessToken);
+  session.set("refreshToken", user.refreshToken);
 
   return redirect("/dashboard", {
     headers: { "Set-Cookie": await commitSession(session) },
