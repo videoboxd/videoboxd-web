@@ -38,7 +38,6 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
       <section className="bg-[#1a1a1a]">
         <div className="container mx-auto py-12">
-          <h3 className="text-4xl">Popular review this week...</h3>
           <div className="mt-8">
             <ul className="grid grid-cols-3">
               {videos.map((video) => (
