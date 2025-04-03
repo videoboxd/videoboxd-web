@@ -1,4 +1,5 @@
 import ky from "ky";
+import { useEffect } from "react";
 import SearchForm from "~/components/shared/SearchFrom";
 import VideoContent from "~/components/shared/VideoContent";
 import type { ResponseVideos } from "~/features/video/type";
@@ -23,6 +24,13 @@ export async function loader({
 
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { videos, q } = loaderData;
+
+  useEffect(() => {
+    const searchField = document.getElementById("q");
+    if (searchField instanceof HTMLInputElement) {
+      searchField.value = q || "";
+    }
+  }, [q])
 
   return (
     <div
