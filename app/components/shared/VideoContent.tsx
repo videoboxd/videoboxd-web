@@ -6,10 +6,14 @@ import type { ResponseVideo } from "~/features/video/type";
 
 export default function VideoContent({ video }: { video: ResponseVideo }) {
   return (
-    <li className="bg-[#252525] rounded-lg overflow-hidden max-w-[420px]">
+    <li className="bg-[#252525] rounded-lg overflow-hidden max-w-[420px] m-2">
       <Link to={video.platformVideoId} className="block">
         {video.thumbnailUrl && (
-          <img src={video.thumbnailUrl} alt={video.title} />
+          <img
+            src={video.thumbnailUrl}
+            alt={video.title}
+            className="w-full h-60 object-contain"
+          />
         )}
 
         <div className="p-4 space-y-1">
