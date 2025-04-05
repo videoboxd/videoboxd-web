@@ -25,7 +25,7 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
 
             <StarRatingBasic value={5} maxStars={5} />
           </div>
-          <p className="text-[#888888]">{video.description}</p>
+          <p className="text-[#888888] overflow-hidden text-ellipsis" style={{ display: '-webkit-box', WebkitLineClamp: 5, WebkitBoxOrient: 'vertical' }}>{video.description}</p>
         </div>
       </Link>
     </li>
