@@ -1,4 +1,5 @@
 import ky from "ky";
+import { useEffect } from "react";
 import SearchForm from "~/components/shared/SearchFrom";
 import VideoContent from "~/components/shared/VideoContent";
 import type { ResponseVideos } from "~/features/video/type";
@@ -12,13 +13,24 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader() {
-  const videos = await ky.get(`${serverApiUrl}/videos`).json<ResponseVideos>();
-  return { videos };
+export async function loader({
+  request,
+}: Route.LoaderArgs) {
+  const url = new URL(request.url);
+  const q = url.searchParams.get("q");
+  const videos = await ky.get(q ? `${serverApiUrl}/videos?q=${q}` : `${serverApiUrl}/videos`).json<ResponseVideos>();
+  return { videos, q };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { videos } = loaderData;
+  const { videos, q } = loaderData;
+
+  useEffect(() => {
+    const searchField = document.getElementById("q");
+    if (searchField instanceof HTMLInputElement) {
+      searchField.value = q || "";
+    }
+  }, [q])
 
   return (
     <div
@@ -33,7 +45,9 @@ export default function Home({ loaderData }: Route.ComponentProps) {
           <br />
           Tell your friends
         </h1>
-        <SearchForm />
+        <SearchForm
+          searchQuery = {q || ""}
+        />
       </section>
 
       <section className="bg-[#1a1a1a]">
