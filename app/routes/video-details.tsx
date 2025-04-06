@@ -4,6 +4,7 @@ import { Card, CardContent } from "~/components/ui/card";
 import type { ResponseVideosIdentifier } from "~/features/video/type";
 import { serverApiUrl } from "~/lib/api-server";
 import type { Route } from "./+types/video-details";
+import { Button } from "~/components/ui/button";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -90,6 +91,10 @@ export default function VideoDetailsRoute({
           </div>
         </CardContent>
       </Card>
+
+      <Button asChild>
+        <Link to={`/review/${video.platformVideoId}`}>Add New Review</Link>
+      </Button>
     </div>
   );
 }

@@ -13,12 +13,12 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
-export async function loader({
-  request,
-}: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
   const q = url.searchParams.get("q");
-  const videos = await ky.get(q ? `${serverApiUrl}/videos?q=${q}` : `${serverApiUrl}/videos`).json<ResponseVideos>();
+  const videos = await ky
+    .get(q ? `${serverApiUrl}/videos?q=${q}` : `${serverApiUrl}/videos`)
+    .json<ResponseVideos>();
   return { videos, q };
 }
 
@@ -30,24 +30,13 @@ export default function Home({ loaderData }: Route.ComponentProps) {
     if (searchField instanceof HTMLInputElement) {
       searchField.value = q || "";
     }
-  }, [q])
+  }, [q]);
 
   return (
-    <div
-      className="bg-fixed bg-cover bg-top bg-no-repeat"
-      style={{ backgroundImage: "url(/images/hero-image.jpg)" }}
-    >
-      <section className="min-h-[90dvh] flex flex-col items-center justify-center font-bold text-5xl md:text-6xl px-8">
-        <h1 className="text-center leading-20">
-          Explore interesting videos
-          <br />
-          Rate your favorites
-          <br />
-          Tell your friends
-        </h1>
-        <SearchForm
-          searchQuery = {q || ""}
-        />
+    <div>
+      <section className="flex flex-col items-center justify-center font-bold text-xl px-8">
+        <h1 className="text-center leading-20">Rate interesting videos</h1>
+        <SearchForm searchQuery={q || ""} />
       </section>
 
       <section className="bg-[#1a1a1a]">

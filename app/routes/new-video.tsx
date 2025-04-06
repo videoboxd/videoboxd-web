@@ -120,11 +120,11 @@ export default function NewVideoRoute({
                   className="p-6 md:p-8"
                 >
                   <div className="flex flex-col">
-                    <Label className="m-2">Video Link</Label>
+                    <Label className="m-2">Video URL</Label>
                     <Input
                       name="originalUrl"
                       type="text"
-                      placeholder="Paste your video link here"
+                      placeholder="Paste your video URL here"
                       className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                     />
                     <p className="text-red-400 text-xs">

@@ -16,6 +16,5 @@ export default [
     route("/new", "routes/new-video.tsx"),
     route("/watch/:platformVideoId", "routes/video-details.tsx"),
     route("/review/:platformVideoId", "routes/new-review.tsx"),
-    // TODO: /:slug/review
   ]),
 ] satisfies RouteConfig;

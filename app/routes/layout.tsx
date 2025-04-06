@@ -6,6 +6,7 @@ import { destroySession, getSession } from "~/lib/sessions.server";
 import { auth } from "~/lib/auth";
 
 export async function loader({ request }: Route.LoaderArgs) {
+  // TODO: Fix this session issue that cause the navigation to be blocked
   const session = await getSession(request.headers.get("Cookie"));
 
   const userId = session.get("userId");
@@ -18,6 +19,7 @@ export async function loader({ request }: Route.LoaderArgs) {
   const refreshToken = session.get("refreshToken");
 
   const user = await auth.getUser(accessToken, refreshToken);
+
   return { user };
 }
 
