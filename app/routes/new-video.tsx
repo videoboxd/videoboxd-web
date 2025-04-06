@@ -24,8 +24,8 @@ import VideoPlayer from "~/components/shared/VideoPlayer";
 
 export function meta({}: Route.MetaArgs) {
   return [
-    { title: "Register New Video" },
-    { name: "description", content: "Register a new video to be reviewed." },
+    { title: "Add New Video  - Videoboxd" },
+    { name: "description", content: "Add a new video to be reviewed." },
   ];
 }
 
@@ -60,8 +60,6 @@ export async function action({ request }: Route.ActionArgs) {
   if (submission.status !== "success")
     return { error: "Failed to add new video" };
 
-  console.log({ submission });
-
   const video = await ky
     .post(`${serverApiUrl}/videos`, {
       credentials: "include",
@@ -70,8 +68,6 @@ export async function action({ request }: Route.ActionArgs) {
     })
     .json<ResponseNewVideo>();
   if (!video) return { error: "Failed to add new video" };
-
-  console.log({ video });
 
   return { video };
 }
@@ -108,18 +104,13 @@ export default function NewVideoRoute({
                 className="cursor-pointer"
                 disabled={!actionData?.video?.platformVideoId}
                 onClick={() => {
-                  navigate(`/${video?.platformVideoId}`);
+                  navigate(`/watch/${video?.platformVideoId}`);
                 }}
               >
                 Continue
               </Button>
             </div>
-            {/* <ReviewButton
-                isSaved={isSaved}
-                videoId={videoId}
-                title={videoData?.title}
-                thumbnailUrl={videoData?.thumbnailUrl}
-              /> */}
+
             <div className="flex flex-row">
               <div className="grid grid-cols-1 flex-1/2">
                 <Form

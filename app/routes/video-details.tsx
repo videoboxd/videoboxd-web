@@ -5,6 +5,16 @@ import type { ResponseVideosIdentifier } from "~/features/video/type";
 import { serverApiUrl } from "~/lib/api-server";
 import type { Route } from "./+types/video-details";
 
+export function meta({ data }: Route.MetaArgs) {
+  return [
+    { title: `${data.video.title} - Videoboxd` || "Video Title - Videoboxd" },
+    {
+      name: "description",
+      content: data.video.description || "No Description",
+    },
+  ];
+}
+
 export async function loader({ params }: Route.LoaderArgs) {
   const { platformVideoId } = params;
   const video = await ky
