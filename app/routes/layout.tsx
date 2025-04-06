@@ -26,7 +26,6 @@ export default function LayoutRoute({ loaderData }: Route.ComponentProps) {
 
   return (
     <div className="flex flex-col min-h-screen">
-      <pre>{JSON.stringify(user)}</pre>
       <Navbar user={user} />
 
       <main className="flex-[1] bg-neutral-600">

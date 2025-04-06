@@ -39,6 +39,7 @@ export async function action({ request }: Route.ClientActionArgs) {
   if (submission.status !== "success") return submission.reply();
 
   const user = await auth.login(submission.value);
+
   if (!user) {
     session.flash("error", "Invalid username/password");
     // Redirect back to the login page with errors.
