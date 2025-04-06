@@ -6,6 +6,13 @@ import { FilePlus } from "lucide-react";
 import { VideoFormSchema } from "~/lib/video";
 import { Card } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "~/components/ui/select";
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { serverApiUrl } from "~/lib/api-server";
@@ -19,6 +26,23 @@ export function meta({}: Route.MetaArgs) {
     { title: "Register New Video" },
     { name: "description", content: "Register a new video to be reviewed." },
   ];
+}
+
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (!session.has("userId")) {
+    return redirect("/login");
+  }
+
+  const categories = await ky
+    .get(`${serverApiUrl}/categories`, {
+      credentials: "include",
+      headers: { Authorization: `Bearer ${session.get("accessToken")}` },
+    })
+    .json<Array<{ id: string; name: string; slug: string }>>();
+
+  return { categories };
 }
 
 export async function action({ request }: Route.ActionArgs) {
@@ -51,8 +75,12 @@ export async function action({ request }: Route.ActionArgs) {
   return { video };
 }
 
-export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
+export default function NewVideoRoute({
+  actionData,
+  loaderData,
+}: Route.ComponentProps) {
   const { video, error } = actionData || {};
+  const { categories } = loaderData;
 
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
@@ -112,12 +140,18 @@ export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
                   </div>
                   <div className="flex flex-col">
                     <Label className="m-2">Category</Label>
-                    <Input
-                      name="categorySlug"
-                      type="text"
-                      placeholder="Video Category"
-                      className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
-                    />
+                    <Select name="categorySlug">
+                      <SelectTrigger className="bg-white rounded-md m-2 py-1 px-3">
+                        <SelectValue placeholder="Select a category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {categories.map((category) => (
+                          <SelectItem key={category.id} value={category.slug}>
+                            {category.name}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
                   </div>
                   <div className="flex flex-row justify-between mt-10">
                     <Button type="submit">Submit Video</Button>
