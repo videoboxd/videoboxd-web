@@ -13,6 +13,7 @@ import ky from "ky";
 import type { ResponseNewVideo } from "~/features/video/type";
 import { getSession } from "~/lib/sessions.server";
 import { Button } from "~/components/ui/button";
+import VideoPlayer from "~/components/shared/VideoPlayer";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -76,6 +77,7 @@ export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
                 <h1 className="text-2xl font-bold">Add a new video</h1>
               </div>
               <Button
+                className="cursor-pointer"
                 disabled={!actionData?.video?.platformVideoId}
                 onClick={() => {
                   navigate(`/${video?.platformVideoId}`);
@@ -120,7 +122,9 @@ export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
                     />
                   </div>
                   <div className="flex flex-row justify-between mt-10">
-                    <Button type="submit">Submit Video</Button>
+                    <Button type="submit" className="cursor-pointer">
+                      Submit Video
+                    </Button>
                   </div>
                 </Form>
               </div>
@@ -134,6 +138,13 @@ export default function NewVideoRoute({ actionData }: Route.ComponentProps) {
                     />
                   ) : (
                     <p className="text-white">No Thumbnail</p>
+                  )}
+                </div>
+                <div className="flex w-full aspect-[16/9] border border-white m-3 items-center justify-center">
+                  {video?.originalUrl ? (
+                    <VideoPlayer url={video.originalUrl} />
+                  ) : (
+                    <p className="text-white">No Video</p>
                   )}
                 </div>
               </div>
