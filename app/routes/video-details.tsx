@@ -2,6 +2,7 @@ import ky from "ky";
 import { Link } from "react-router";
 import { Card, CardContent } from "~/components/ui/card";
 import type { ResponseVideosIdentifier } from "~/features/video/type";
+import type { ResponseReviews } from "~/features/review/type";
 import { serverApiUrl } from "~/lib/api-server";
 import type { Route } from "./+types/video-details";
 import { Button } from "~/components/ui/button";
@@ -21,13 +22,18 @@ export async function loader({ params }: Route.LoaderArgs) {
   const video = await ky
     .get(`${serverApiUrl}/videos/${platformVideoId}`)
     .json<ResponseVideosIdentifier>();
-  return { video };
+
+  const reviews = await ky
+    .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
+    .json<ResponseReviews>();
+
+  return { video, reviews };
 }
 
 export default function VideoDetailsRoute({
   loaderData,
 }: Route.ComponentProps) {
-  const { video } = loaderData;
+  const { video, reviews } = loaderData;
 
   return (
     <div className="container mx-auto py-8">
@@ -87,6 +93,16 @@ export default function VideoDetailsRoute({
               >
                 Watch on {video.platform?.name}
               </a>
+            </div>
+            <div>
+              <p className="text-xl text-red-500">Space for comments</p>
+              <button>Create a review</button>
+              {reviews.map((review) => (
+                <div>
+                  <p>{review.user.username}</p>
+                  <p key={review.id}>{review.text}</p>
+                </div>
+              ))}
             </div>
           </div>
         </CardContent>
