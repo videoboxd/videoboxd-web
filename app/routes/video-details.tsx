@@ -19,9 +19,9 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const { platformVideoId } = params;
+  const { videoId } = params;
   const video = await ky
-    .get(`${serverApiUrl}/videos/${platformVideoId}`)
+    .get(`${serverApiUrl}/videos/${videoId}`)
     .json<ResponseVideosIdentifier>();
 
   const reviews = await ky
@@ -123,7 +123,7 @@ export default function VideoDetailsRoute({
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Reviews</h2>
             <Button asChild>
-              <Link to={`/review/${video.platformVideoId}`}>Add Review</Link>
+              <Link to={`/review/${video.id}`}>Add Review</Link>
             </Button>
           </div>
 
@@ -133,14 +133,14 @@ export default function VideoDetailsRoute({
 
           <div className="space-y-6">
             {reviews.map((review) => (
-              <div key={review.id} className="border rounded-lg p-4 bg-background shadow-sm">
+              <div key={review.id} className="rounded-lg p-4 bg-slate-600 shadow-sm">
                 <div className="flex items-center gap-3 mb-2">
                   <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
                     {review.user.username[0].toUpperCase()}
                   </div>
                   <span className="font-medium">{review.user.username}</span>
                 </div>
-                <p className="whitespace-pre-wrap text-muted-foreground">{review.text}</p>
+                <p className="whitespace-pre-wrap text-white">{review.text}</p>
               </div>
             ))}
           </div>
