@@ -7,6 +7,7 @@ import type { ResponseReviews } from "~/features/review/type";
 import { serverApiUrl } from "~/lib/api-server";
 import type { Route } from "./+types/video-details";
 import { Button } from "~/components/ui/button";
+import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -134,11 +135,19 @@ export default function VideoDetailsRoute({
           <div className="space-y-6">
             {reviews.map((review) => (
               <div key={review.id} className="rounded-lg p-4 bg-slate-600 shadow-sm">
-                <div className="flex items-center gap-3 mb-2">
-                  <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
-                    {review.user.username[0].toUpperCase()}
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
+                      {review.user.username[0].toUpperCase()}
+                    </div>
+                    <span className="font-medium">{review.user.username}</span>
                   </div>
-                  <span className="font-medium">{review.user.username}</span>
+                  <StarRatingBasic
+                    value={review.rating}
+                    maxStars={review.rating}
+                    readOnly={true}
+                    className="p-2"
+                  />
                 </div>
                 <p className="whitespace-pre-wrap text-white">{review.text}</p>
               </div>
