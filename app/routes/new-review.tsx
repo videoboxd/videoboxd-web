@@ -1,6 +1,6 @@
 import { Label } from "@radix-ui/react-label";
 import { useState } from "react";
-import { Form, useNavigate } from "react-router";
+import { Form, useNavigate, redirect } from "react-router";
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import { Card } from "~/components/ui/card";
 import { TextArea } from "~/components/ui/textarea";
@@ -8,6 +8,9 @@ import type { Route } from "./+types/new-review";
 import ky from "ky";
 import { serverApiUrl } from "~/lib/api-server";
 import type { ResponseVideosIdentifier } from "~/features/video/type";
+import { getSession } from "~/lib/sessions.server";
+import { parseWithZod } from "@conform-to/zod";
+import { reviewFormSchema } from "~/lib/review";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -23,11 +26,38 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ params }: Route.LoaderArgs) {
-  const { platformVideoId } = params;
+  const { videoId } = params;
   const video = await ky
-    .get(`${serverApiUrl}/videos/${platformVideoId}`)
+    .get(`${serverApiUrl}/videos/${videoId}`)
     .json<ResponseVideosIdentifier>();
   return { video };
+}
+
+export async function action({ params, request }: Route.ActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  if (!session.has("userId")) {
+    return redirect("/login");
+  }
+
+  const formData = await request.formData();
+  // const review = Object.fromEntries(formData);
+  const review = parseWithZod(formData, {
+      schema: reviewFormSchema,
+    });
+  if (review.status !== "success")
+    return { error: "Failed to add new review" }
+  const { videoId } = params;
+  
+  const submittedReview = await ky
+    .post(`${serverApiUrl}/reviews/${videoId}`, {
+      credentials: "include",
+      headers: { Authorization: `Bearer ${session.get("accessToken")}` },
+      json: review.value
+    })
+    .json();
+
+  return redirect(`/watch/${videoId}`)
 }
 
 export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
@@ -55,6 +85,7 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
                 <div className="flex flex-col">
                   <Label className="m-2">Review</Label>
                   <TextArea
+                    name="text"
                     placeholder="Write your review..."
                     className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                   />
@@ -68,6 +99,7 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
                     maxStars={5}
                     className="p-2"
                   />
+                  <input type="hidden" name="rating" value={rating} />
                 </div>
                 <div className="flex flex-row justify-between mt-10">
                   <button

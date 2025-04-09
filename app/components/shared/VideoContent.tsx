@@ -7,7 +7,7 @@ import type { ResponseVideo } from "~/features/video/type";
 export default function VideoContent({ video }: { video: ResponseVideo }) {
   return (
     <li className="bg-[#252525] rounded-lg overflow-hidden max-w-[420px] m-2">
-      <Link to={`/watch/${video.platformVideoId}`} className="block">
+      <Link to={`/watch/${video.id}`} className="block">
         {video.thumbnailUrl && (
           <img
             src={video.thumbnailUrl}
