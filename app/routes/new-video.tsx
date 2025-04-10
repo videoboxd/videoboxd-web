@@ -144,39 +144,41 @@ export default function NewVideoRoute({
               </div>
             </Form>
 
-            <div className="px-6 pb-8">
-              <div className="flex flex-col gap-4">
-                <div className="border border-white w-full aspect-[16/9] items-center justify-center flex">
-                  {video?.thumbnailUrl ? (
-                    <img
-                      src={video.thumbnailUrl}
-                      alt="YouTube Thumbnail"
-                      className="w-full object-cover"
-                    />
-                  ) : (
-                    <p className="text-white">No Thumbnail</p>
-                  )}
-                </div>
-                <div className="flex w-full aspect-[16/9] border border-white items-center justify-center">
-                  {video?.originalUrl ? (
-                    <VideoPlayer url={video.originalUrl} />
-                  ) : (
-                    <p className="text-white">No Video</p>
-                  )}
-                </div>
-                <div className="flex justify-end gap-4 mt-4 w-full">
-                  <Button
-                    className="cursor-pointer w-full"
-                    disabled={!actionData?.video?.platformVideoId}
-                    onClick={() => {
-                      navigate(`/watch/${video?.platformVideoId}`);
-                    }}
-                  >
-                    Continue
-                  </Button>
+            {video && (
+              <div className="px-6 pb-8">
+                <div className="flex flex-col gap-4">
+                  <div className="border border-white w-full aspect-[16/9] items-center justify-center flex">
+                    {video.thumbnailUrl ? (
+                      <img
+                        src={video.thumbnailUrl}
+                        alt="YouTube Thumbnail"
+                        className="w-full object-cover"
+                      />
+                    ) : (
+                      <p className="text-white">No Thumbnail</p>
+                    )}
+                  </div>
+                  <div className="flex w-full aspect-[16/9] border border-white items-center justify-center">
+                    {video.originalUrl ? (
+                      <VideoPlayer url={video.originalUrl} />
+                    ) : (
+                      <p className="text-white">No Video</p>
+                    )}
+                  </div>
+                  <div className="flex justify-end gap-4 mt-4 w-full">
+                    <Button
+                      className="cursor-pointer w-full"
+                      disabled={!video.platformVideoId}
+                      onClick={() => {
+                        navigate(`/watch/${video.platformVideoId}`);
+                      }}
+                    >
+                      Continue
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </Card>
       </div>
