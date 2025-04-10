@@ -2,6 +2,7 @@ import type { Route } from "./+types/new-video";
 import { Form, Link, redirect, useNavigate } from "react-router";
 import { Label } from "@radix-ui/react-label";
 import { FilePlus } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import { VideoFormSchema } from "~/lib/video";
 import { Card } from "~/components/ui/card";
@@ -146,8 +147,8 @@ export default function NewVideoRoute({
 
             {video && (
               <div className="px-6 pb-8">
-                <div className="flex flex-col gap-4">
-                  <div className="border border-white w-full aspect-[16/9] items-center justify-center flex">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="border border-white aspect-[16/9] items-center justify-center flex">
                     {video.thumbnailUrl ? (
                       <img
                         src={video.thumbnailUrl}
@@ -158,24 +159,24 @@ export default function NewVideoRoute({
                       <p className="text-white">No Thumbnail</p>
                     )}
                   </div>
-                  <div className="flex w-full aspect-[16/9] border border-white items-center justify-center">
+                  <div className="flex aspect-[16/9] border border-white items-center justify-center">
                     {video.originalUrl ? (
                       <VideoPlayer url={video.originalUrl} />
                     ) : (
                       <p className="text-white">No Video</p>
                     )}
                   </div>
-                  <div className="flex justify-end gap-4 mt-4 w-full">
-                    <Button
-                      className="cursor-pointer w-full"
-                      disabled={!video.platformVideoId}
-                      onClick={() => {
-                        navigate(`/watch/${video.platformVideoId}`);
-                      }}
-                    >
-                      Continue
-                    </Button>
-                  </div>
+                </div>
+                <div className="flex justify-end gap-4 mt-4 w-full">
+                  <Button
+                    className="cursor-pointer w-full"
+                    disabled={!video.platformVideoId}
+                    onClick={() => {
+                      navigate(`/watch/${video.platformVideoId}`);
+                    }}
+                  >
+                    Continue
+                  </Button>
                 </div>
               </div>
             )}
