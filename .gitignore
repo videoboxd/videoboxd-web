@@ -8,3 +8,5 @@
 
 # Sentry Config File
 .env.sentry-build-plugin
+schema.d.ts
+.vercel

@@ -66,7 +66,7 @@ export const auth: Auth = {
         .json<ResponseAuthMe>();
       return data;
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       return null;
     }
   },
