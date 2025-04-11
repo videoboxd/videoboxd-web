@@ -146,8 +146,19 @@ export default function NewVideoRoute({
             </Form>
 
             {video && (
-              <div className="px-6 pb-8">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-6 md:p-8">
+                <div className="flex justify-end gap-4 mb-4 w-full">
+                  <Button
+                    className="cursor-pointer w-full"
+                    disabled={!video.platformVideoId}
+                    onClick={() => {
+                      navigate(`/watch/${video.platformVideoId}`);
+                    }}
+                  >
+                    Continue
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
                   <div className="border border-white aspect-[16/9] items-center justify-center flex">
                     {video.thumbnailUrl ? (
                       <img
@@ -166,17 +177,6 @@ export default function NewVideoRoute({
                       <p className="text-white">No Video</p>
                     )}
                   </div>
-                </div>
-                <div className="flex justify-end gap-4 mt-4 w-full">
-                  <Button
-                    className="cursor-pointer w-full"
-                    disabled={!video.platformVideoId}
-                    onClick={() => {
-                      navigate(`/watch/${video.platformVideoId}`);
-                    }}
-                  >
-                    Continue
-                  </Button>
                 </div>
               </div>
             )}
