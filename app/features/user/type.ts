@@ -8,3 +8,6 @@ export type ResponseLogin =
 
 export type ResponseAuthMe =
   paths["/auth/me"]["get"]["responses"][200]["content"]["application/json"];
+
+export type ResponseUsersIndetifier =
+  paths["/users/{identifier}"]["get"]["responses"][200]["content"]["application/json"];

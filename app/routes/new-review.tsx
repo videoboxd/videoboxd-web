@@ -43,21 +43,20 @@ export async function action({ params, request }: Route.ActionArgs) {
   const formData = await request.formData();
   // const review = Object.fromEntries(formData);
   const review = parseWithZod(formData, {
-      schema: reviewFormSchema,
-    });
-  if (review.status !== "success")
-    return { error: "Failed to add new review" }
+    schema: reviewFormSchema,
+  });
+  if (review.status !== "success") return { error: "Failed to add new review" };
   const { videoId } = params;
-  
+
   const submittedReview = await ky
     .post(`${serverApiUrl}/reviews/${videoId}`, {
       credentials: "include",
       headers: { Authorization: `Bearer ${session.get("accessToken")}` },
-      json: review.value
+      json: review.value,
     })
     .json();
 
-  return redirect(`/watch/${videoId}`)
+  return redirect(`/watch/${videoId}`);
 }
 
 export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
@@ -66,9 +65,9 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
   const [rating, setRating] = useState(0);
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
+    <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       <div className="w-full max-w-sm md:max-w-3xl">
-        <Card>
+        <Card className="bg-neutral-900/60">
           <div className="py-3 px-6">
             <div className="flex flex-row justify-between mb-4">
               <h1 className="text-2xl font-bold">Submit Review</h1>
@@ -77,7 +76,7 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
               <img
                 src={video.thumbnailUrl || undefined}
                 alt="video-thumbnail"
-                className="p-2 justify-self-center"
+                className="p-2 justify-self-center rounded-xl"
               />
               <h1 className="p-2 text-xl font-bold">{video.title}</h1>
 

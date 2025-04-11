@@ -39,20 +39,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
         <SearchForm searchQuery={q || ""} />
       </section>
 
-      <section className="bg-[#1a1a1a]">
+      <section className="">
         <div className="container mx-auto py-12">
           <div className="mt-8">
-            <ul className="grid grid-cols-3">
-              {videos.map((video) => (
-                <VideoContent key={video.id} video={video} />
-              ))}
-            </ul>
-          </div>
-
-          <h3 className="text-4xl mt-12">Just reviewed...</h3>
-
-          <div className="mt-8 overflow-x-auto">
-            <ul className="flex flex-wrap">
+            <ul className="grid grid-cols-4 gap-4">
               {videos.map((video) => (
                 <VideoContent key={video.id} video={video} />
               ))}

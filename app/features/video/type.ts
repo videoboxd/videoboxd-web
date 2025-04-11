@@ -11,3 +11,6 @@ export type ResponseVideosIdentifier =
 
 export type ResponseNewVideo =
   paths["/videos"]["post"]["responses"][201]["content"]["application/json"];
+
+export type ResponseAllVideos =
+  paths["/videos"]["get"]["responses"][200]["content"]["application/json"];

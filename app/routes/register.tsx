@@ -38,11 +38,11 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
   });
 
   return (
-    <div className="flex min-h-svh flex-col items-center justify-center bg-muted p-6 md:p-10">
-      <div className="w-full max-w-sm md:max-w-3xl">
-        <div className="flex flex-col gap-6">
+    <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+      <div className="w-full max-w-sm md:max-w-sm">
+        <div className="flex flex-col gap-2">
           <Card className="overflow-hidden">
-            <CardContent className="grid p-0 md:grid-cols-2">
+            <CardContent className="grid p-0">
               <Form
                 method="post"
                 id={form.id}

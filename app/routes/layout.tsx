@@ -30,7 +30,7 @@ export default function LayoutRoute({ loaderData }: Route.ComponentProps) {
     <div className="flex flex-col min-h-screen">
       <Navbar user={user} />
 
-      <main className="flex-[1] bg-neutral-600">
+      <main className="bg-gradient-to-br from-purple-950 via-sky-950 to-blue-950 dark:from-indigo-950 dark:via-blue-950 dark:to-neutral-950 bg-[#00000090]">
         <Outlet />
       </main>
 
