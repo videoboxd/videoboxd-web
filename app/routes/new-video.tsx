@@ -2,6 +2,7 @@ import type { Route } from "./+types/new-video";
 import { Form, Link, redirect, useNavigate } from "react-router";
 import { Label } from "@radix-ui/react-label";
 import { FilePlus } from "lucide-react";
+import { useEffect, useRef } from "react";
 
 import { VideoFormSchema } from "~/lib/video";
 import { Card } from "~/components/ui/card";
@@ -95,85 +96,90 @@ export default function NewVideoRoute({
       <div className="w-full max-w-sm md:max-w-3xl">
         <Card>
           <div className="py-3 px-6">
-            <div className="flex flex-row m-2 items-center justify-between">
+            <div className="flex flex-row m-2 items-center">
               <div className="inline-flex gap-1 items-center">
                 <FilePlus />
                 <h1 className="text-2xl font-bold">Add a new video</h1>
               </div>
-              <Button
-                className="cursor-pointer"
-                disabled={!actionData?.video?.platformVideoId}
-                onClick={() => {
-                  navigate(`/watch/${video?.platformVideoId}`);
-                }}
-              >
-                Continue
-              </Button>
             </div>
 
-            <div className="flex flex-row">
-              <div className="grid grid-cols-1 flex-1/2">
-                <Form
-                  method="post"
-                  id={form.id}
-                  onSubmit={form.onSubmit}
-                  className="p-6 md:p-8"
-                >
-                  <div className="flex flex-col">
-                    <Label className="m-2">Video URL</Label>
-                    <Input
-                      name="originalUrl"
-                      type="text"
-                      placeholder="Paste your video URL here"
-                      className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
-                    />
-                    <p className="text-red-400 text-xs">
-                      {fields.originalUrl.errors}
-                    </p>
-                  </div>
-                  <div className="flex flex-col">
-                    <Label className="m-2">Category</Label>
-                    <Select name="categorySlug">
-                      <SelectTrigger className="bg-white rounded-md m-2 py-1 px-3">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categories.map((category) => (
-                          <SelectItem key={category.id} value={category.slug}>
-                            {category.name}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="flex flex-row justify-between mt-10">
-                    <Button type="submit" className="cursor-pointer">
-                      Submit Video
-                    </Button>
-                  </div>
-                </Form>
-              </div>
-              <div className="flex-1/2 p-4">
-                <div className="flex border border-white w-full aspect-[16/9] m-3 items-center justify-center">
-                  {video?.thumbnailUrl ? (
-                    <img
-                      src={video.thumbnailUrl}
-                      alt="YouTube Thumbnail"
-                      className="w-full object-cover"
-                    />
-                  ) : (
-                    <p className="text-white">No Thumbnail</p>
-                  )}
+            <Form
+              method="post"
+              id={form.id}
+              onSubmit={form.onSubmit}
+              className="p-6 md:p-8"
+            >
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-4">
+                  <Label className="w-24">Video URL</Label>
+                  <Input
+                    name="originalUrl"
+                    type="text"
+                    placeholder="Paste your video URL here"
+                    className="flex-1 bg-white rounded-md placeholder:text-gray-500 text-slate-800"
+                  />
                 </div>
-                <div className="flex w-full aspect-[16/9] border border-white m-3 items-center justify-center">
-                  {video?.originalUrl ? (
-                    <VideoPlayer url={video.originalUrl} />
-                  ) : (
-                    <p className="text-white">No Video</p>
-                  )}
+                <p className="text-red-400 text-xs ml-28">{fields.originalUrl.errors}</p>
+
+                <div className="flex items-center gap-4">
+                  <Label className="w-24">Category</Label>
+                  <Select name="categorySlug">
+                    <SelectTrigger className="bg-white rounded-md">
+                      <SelectValue placeholder="Select a category" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {categories.map((category) => (
+                        <SelectItem key={category.id} value={category.slug}>
+                          {category.name}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="flex justify-end mt-6 w-full">
+                  <Button type="submit" className="cursor-pointer w-full">
+                    Submit Video
+                  </Button>
                 </div>
               </div>
-            </div>
+            </Form>
+
+            {video && (
+              <div className="p-6 md:p-8">
+                <div className="flex justify-end gap-4 mb-4 w-full">
+                  <Button
+                    className="cursor-pointer w-full"
+                    disabled={!video.platformVideoId}
+                    onClick={() => {
+                      navigate(`/watch/${video.platformVideoId}`);
+                    }}
+                  >
+                    Continue
+                  </Button>
+                </div>
+                <div className="grid grid-cols-1 gap-4">
+                  <div className="border border-white aspect-[16/9] items-center justify-center flex">
+                    {video.thumbnailUrl ? (
+                      <img
+                        src={video.thumbnailUrl}
+                        alt="YouTube Thumbnail"
+                        className="w-full object-cover"
+                      />
+                    ) : (
+                      <p className="text-white">No Thumbnail</p>
+                    )}
+                  </div>
+                  <div className="flex aspect-[16/9] border border-white items-center justify-center">
+                    {video.originalUrl ? (
+                      <VideoPlayer url={video.originalUrl} />
+                    ) : (
+                      <p className="text-white">No Video</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </Card>
       </div>
