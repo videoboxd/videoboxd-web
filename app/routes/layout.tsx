@@ -20,7 +20,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   const user = await auth.getUser(accessToken, refreshToken);
 
-  return { user: null };
+  return { user };
 }
 
 export default function LayoutRoute({ loaderData }: Route.ComponentProps) {
