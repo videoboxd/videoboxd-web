@@ -1,12 +1,12 @@
-import { getSession } from "~/lib/sessions.server";
-import type { Route } from "./+types/dashboard";
-import { Link, redirect } from "react-router";
-import { auth } from "~/lib/auth";
-import { serverApiUrl } from "~/lib/api-server";
-import type { ResponseUsersIndetifier } from "~/features/user/type";
 import ky from "ky";
-import { Button } from "~/components/ui/button";
+import { Link, redirect } from "react-router";
 import VideoContentUser from "~/components/shared/VideoContentUser";
+import { Button } from "~/components/ui/button";
+import type { ResponseUsersIndetifier } from "~/features/user/type";
+import { serverApiUrl } from "~/lib/api-server";
+import { auth } from "~/lib/auth";
+import { getSession } from "~/lib/sessions";
+import type { Route } from "./+types/dashboard";
 
 export function meta({}: Route.MetaArgs) {
   return [

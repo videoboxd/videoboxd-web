@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { auth, UserLoginPayloadSchema } from "~/lib/auth";
-import { commitSession, getSession } from "~/lib/sessions.server";
+import { commitSession, getSession } from "~/lib/sessions";
 import type { Route } from "./+types/login";
 
 export function meta({}: Route.MetaArgs) {

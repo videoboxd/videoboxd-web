@@ -7,7 +7,7 @@ import type { ResponseReviews } from "~/features/review/type";
 import { serverApiUrl } from "~/lib/api-server";
 import { Button } from "~/components/ui/button";
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
-import { getSession } from "~/lib/sessions.server";
+import { getSession } from "~/lib/sessions";
 
 export function meta({ data }: Route.MetaArgs) {
   return [

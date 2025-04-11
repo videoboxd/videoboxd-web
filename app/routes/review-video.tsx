@@ -9,7 +9,7 @@ import { TextArea } from "~/components/ui/textarea";
 import type { ResponseVideoIdentifier } from "~/features/video/type";
 import { serverApiUrl } from "~/lib/api-server";
 import { reviewFormSchema } from "~/lib/review";
-import { getSession } from "~/lib/sessions.server";
+import { getSession } from "~/lib/sessions";
 import type { Route } from "./+types/review-video";
 
 export function meta({ data }: Route.MetaArgs) {

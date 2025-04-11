@@ -19,7 +19,7 @@ import { parseWithZod } from "@conform-to/zod";
 import { serverApiUrl } from "~/lib/api-server";
 import ky from "ky";
 import type { ResponseNewVideo } from "~/features/video/type";
-import { getSession } from "~/lib/sessions.server";
+import { getSession } from "~/lib/sessions";
 import { Button } from "~/components/ui/button";
 import VideoPlayer from "~/components/shared/VideoPlayer";
 
@@ -119,7 +119,9 @@ export default function NewVideoRoute({
                     className="flex-1 bg-white rounded-md placeholder:text-gray-500 text-slate-800"
                   />
                 </div>
-                <p className="text-red-400 text-xs ml-28">{fields.originalUrl.errors}</p>
+                <p className="text-red-400 text-xs ml-28">
+                  {fields.originalUrl.errors}
+                </p>
 
                 <div className="flex items-center gap-4">
                   <Label className="w-24">Category</Label>
