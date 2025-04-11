@@ -8,6 +8,9 @@ export default defineConfig({
   plugins: [tailwindcss(), reactRouter(), tsconfigPaths(), sentryVitePlugin({
     org: "videoboxd",
     project: "videoboxd"
+  }), sentryVitePlugin({
+    org: "videoboxd",
+    project: "videoboxd"
   })],
 
   build: {
