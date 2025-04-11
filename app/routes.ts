@@ -14,7 +14,7 @@ export default [
     route("/logout", "routes/logout.tsx"),
     route("/dashboard", "routes/dashboard.tsx"),
     route("/new", "routes/new-video.tsx"),
-    route("/watch/:videoId", "routes/video-details.tsx"),
-    route("/review/:videoId", "routes/new-review.tsx"),
+    route("/watch/:videoId", "routes/watch-video.tsx"),
+    route("/review/:videoId", "routes/review-video.tsx"),
   ]),
 ] satisfies RouteConfig;

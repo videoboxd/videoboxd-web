@@ -6,7 +6,7 @@ export type ResponseVideos =
 
 export type ResponseVideo = ElementType<ResponseVideos>;
 
-export type ResponseVideosIdentifier =
+export type ResponseVideoIdentifier =
   paths["/videos/{identifier}"]["get"]["responses"][200]["content"]["application/json"];
 
 export type ResponseNewVideo =

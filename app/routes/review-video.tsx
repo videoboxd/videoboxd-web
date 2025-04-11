@@ -1,16 +1,16 @@
+import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@radix-ui/react-label";
+import ky from "ky";
 import { useState } from "react";
-import { Form, useNavigate, redirect } from "react-router";
+import { Form, redirect, useNavigate } from "react-router";
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import { Card } from "~/components/ui/card";
 import { TextArea } from "~/components/ui/textarea";
-import type { Route } from "./+types/new-review";
-import ky from "ky";
+import type { ResponseVideoIdentifier } from "~/features/video/type";
 import { serverApiUrl } from "~/lib/api-server";
-import type { ResponseVideosIdentifier } from "~/features/video/type";
-import { getSession } from "~/lib/sessions.server";
-import { parseWithZod } from "@conform-to/zod";
 import { reviewFormSchema } from "~/lib/review";
+import { getSession } from "~/lib/sessions.server";
+import type { Route } from "./+types/review-video";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -25,11 +25,15 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  if (!session.has("userId")) return redirect("/login");
+
   const { videoId } = params;
   const video = await ky
     .get(`${serverApiUrl}/videos/${videoId}`)
-    .json<ResponseVideosIdentifier>();
+    .json<ResponseVideoIdentifier>();
+
   return { video };
 }
 

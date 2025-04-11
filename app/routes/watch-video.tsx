@@ -1,12 +1,13 @@
+import type { Route } from "./+types/watch-video";
 import ky from "ky";
 import { Link } from "react-router";
 import { useState } from "react";
-import type { ResponseVideosIdentifier } from "~/features/video/type";
+import type { ResponseVideoIdentifier } from "~/features/video/type";
 import type { ResponseReviews } from "~/features/review/type";
 import { serverApiUrl } from "~/lib/api-server";
-import type { Route } from "./+types/video-details";
 import { Button } from "~/components/ui/button";
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
+import { getSession } from "~/lib/sessions.server";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -18,23 +19,27 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ request, params }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+  const isAuthenticated = session.has("userId");
+
   const { videoId } = params;
+
   const video = await ky
     .get(`${serverApiUrl}/videos/${videoId}`)
-    .json<ResponseVideosIdentifier>();
+    .json<ResponseVideoIdentifier>();
 
   const reviews = await ky
     .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
     .json<ResponseReviews>();
 
-  return { video, reviews };
+  return { isAuthenticated, video, reviews };
 }
 
 export default function VideoDetailsRoute({
   loaderData,
 }: Route.ComponentProps) {
-  const { video, reviews } = loaderData;
+  const { isAuthenticated, video, reviews } = loaderData;
   const [expanded, setExpanded] = useState(false);
 
   const toggleDescription = () => setExpanded(!expanded);
@@ -125,9 +130,13 @@ export default function VideoDetailsRoute({
         <div className="py-8 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Reviews</h2>
-            <Button asChild>
-              <Link to={`/review/${video.id}`}>Add Review</Link>
-            </Button>
+            {isAuthenticated && (
+              <div>
+                <Button asChild>
+                  <Link to={`/review/${video.id}`}>Add Review</Link>
+                </Button>
+              </div>
+            )}
           </div>
 
           {reviews.length === 0 && (
