@@ -10,10 +10,10 @@ export async function loader({ request }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
 
   const userId = session.get("userId");
-  if (!userId) {
-    await destroySession(session);
-    return { user: null };
-  }
+  // if (!userId) {
+  //   await destroySession(session);
+  //   return { user: null };
+  // }
 
   const accessToken = session.get("accessToken");
   const refreshToken = session.get("refreshToken");
