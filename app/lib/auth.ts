@@ -1,9 +1,20 @@
-import { z } from "zod";
-import { Cookies as ReactCookie } from "react-cookie";
 import ky from "ky";
+import { z } from "zod";
+import type {
+  ResponseAuthMe,
+  ResponseLogin,
+  ResponseRegister,
+} from "~/features/user/type";
 
-import { dueDate } from "~/lib/date";
-import { apiUrl } from "~/lib/api";
+import { serverApiUrl } from "~/lib/api-server";
+
+export type User = {
+  id: string;
+  fullname: string;
+  email: string;
+  avatarUrl: string;
+  username: string;
+};
 
 export const UserLoginPayloadSchema = z.object({
   username: z.string({ message: "This field is required" }),
@@ -11,62 +22,56 @@ export const UserLoginPayloadSchema = z.object({
 });
 
 export const UserRegisterPayloadSchema = z.object({
-  username: z.string({ message: "Username is required" }),
-  email: z.string({ message: "Email is required" }),
+  email: z.string().email({ message: "Email is required" }),
   password: z.string({ message: "Password is required" }),
+  fullName: z.string({ message: "Fullname is required" }),
+  username: z.string({ message: "Username is required" }),
 });
 
 export type UserLoginPayload = z.infer<typeof UserLoginPayloadSchema>;
 export type UserRegisterPayload = z.infer<typeof UserRegisterPayloadSchema>;
 
 export type Auth = {
-  isAuthenticated: boolean;
-  getToken: () => void;
-  register: (userRegister: UserRegisterPayload) => Promise<boolean>;
-  login: (userLogin: UserLoginPayload) => Promise<boolean>;
-  logout: () => void;
-};
-
-const COOKIE_NAME = "access-token-name";
-
-export const accessTokenCookie = new ReactCookie(null, {
-  path: "/",
-  sameSite: "none",
-  secure: true,
-  expires: dueDate(30),
-});
-
-export const accessToken = {
-  get: () => {
-    return accessTokenCookie.get(COOKIE_NAME) || null;
-  },
-  set: (token: string) => {
-    accessTokenCookie.set(COOKIE_NAME, token);
-  },
-  remove: () => {
-    accessTokenCookie.remove(COOKIE_NAME);
-  },
+  register: (data: UserRegisterPayload) => Promise<ResponseRegister>;
+  login: (data: UserLoginPayload) => Promise<ResponseLogin>;
+  getUser: (
+    accessToken?: string,
+    refreshToken?: string
+  ) => Promise<ResponseAuthMe | null>;
+  logout: () => Promise<User>;
 };
 
 export const auth: Auth = {
-  isAuthenticated: false,
-  getToken: () => {
-    return accessToken.get();
+  register: async (data: UserRegisterPayload) => {
+    return await ky
+      .post(`${serverApiUrl}/auth/register`, { json: data })
+      .json<ResponseRegister>();
   },
-  register: async (userRegister: UserRegisterPayload) => {
-    const response = await ky
-      .post(`${apiUrl}/auth/register`, { json: userRegister })
-      .json();
-    return true;
+
+  login: async (data: UserLoginPayload) => {
+    return await ky
+      .post(`${serverApiUrl}/auth/login`, { json: data })
+      .json<ResponseLogin>();
   },
-  login: async (userLogin: UserLoginPayload) => {
-    const response = await ky
-      .post(`${apiUrl}/auth/login`, { json: userLogin })
-      .json();
-    return false;
+
+  getUser: async (accessToken, refreshToken) => {
+    try {
+      const data = await ky
+        .get(`${serverApiUrl}/auth/me`, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+            // Cookie: `access_token=${accessToken}; refresh_token=${refreshToken};`,
+          },
+        })
+        .json<ResponseAuthMe>();
+      return data;
+    } catch (error) {
+      console.error(error);
+      return null;
+    }
   },
-  logout: () => {
-    accessToken.remove();
-    auth.isAuthenticated = false;
+
+  logout: async () => {
+    return await ky.delete(`${serverApiUrl}/auth/logout`).json<User>();
   },
 };
