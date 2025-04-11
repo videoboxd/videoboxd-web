@@ -6,13 +6,13 @@ import type { ResponseVideo } from "~/features/video/type";
 
 export default function VideoContent({ video }: { video: ResponseVideo }) {
   return (
-    <li className="bg-[#252525] rounded-lg overflow-hidden max-w-[420px] m-2">
+    <li className="bg-neutral-900/60 rounded-lg overflow-hidden m-2">
       <Link to={`/watch/${video.id}`} className="block">
         {video.thumbnailUrl && (
           <img
             src={video.thumbnailUrl}
             alt={video.title}
-            className="w-full h-60 object-contain"
+            className="w-full h-60 object-cover"
           />
         )}
 
@@ -21,10 +21,17 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
           <div className="flex justify-between items-center">
             <span className="flex items-center gap-2 text-[15px]">
               <Icon icon="fa-solid:comment-alt" className="text-[16px]" />
-              <span>100</span>
+              <span>
+                {video?.reviews.length > 0 ? video?.reviews.length : 0}
+              </span>
             </span>
 
-            <StarRatingBasic value={5} maxStars={5} />
+            {/* <StarRatingBasic
+              value= {3}
+              maxStars={5}
+              readOnly={true}
+              className="p-2"
+            /> */}
           </div>
           <p
             className="text-[#888888] overflow-hidden text-ellipsis"

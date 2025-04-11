@@ -1,6 +1,5 @@
 import ky from "ky";
 import { Link } from "react-router";
-import { Card, CardContent } from "~/components/ui/card";
 import { useState } from "react";
 import type { ResponseVideosIdentifier } from "~/features/video/type";
 import type { ResponseReviews } from "~/features/review/type";
@@ -41,7 +40,7 @@ export default function VideoDetailsRoute({
   const toggleDescription = () => setExpanded(!expanded);
 
   return (
-    <main className="flex bg-card items-center justify-center">
+    <main className="flex items-center justify-center">
       <div className="w-full max-w-sm md:max-w-5xl p-3">
         {/* Video Info Section */}
         <div className="space-y-4">
@@ -49,15 +48,15 @@ export default function VideoDetailsRoute({
           <div className="mt-4 flex flex-wrap justify-between">
             <Link
               to="/"
-              className="px-4 py-2 text-md font-medium hover:text-gray-600 rounded-lg transition"
+              className="py-2 text-md font-medium hover:text-neutral-300  rounded-lg transition"
             >
-              ← Back to Home
+              Back to Home
             </Link>
             <a
               href={video.originalUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="px-4 py-2 text-md font-semibold text-primary hover:text-blue-800 rounded-lg transition"
+              className="py-2 text-md font-semibold text-white hover:text-neutral-300 rounded-lg transition"
             >
               Watch on {video.platform?.name}
             </a>
@@ -71,27 +70,30 @@ export default function VideoDetailsRoute({
           />
 
           {/* Title & Metadata */}
-          <div className="space-y-3">
+          <div className="space-y-3 text-neutral-100">
             <h1 className="text-3xl font-bold">{video.title}</h1>
 
-            <div className="flex items-center gap-2 text-muted-foreground text-sm">
+            <div className="flex items-center gap-2 text-neutral-200 text-sm">
               <span>{video.platform?.name}</span>
               <span>•</span>
               <span>
-                {new Date(video.uploadedAt || new Date()).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+                {new Date(video.uploadedAt || new Date()).toLocaleDateString(
+                  "en-US",
+                  {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  }
+                )}
               </span>
             </div>
 
             {/* Categories */}
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-2 text-neutral-200">
               {video.categories?.map((category) => (
                 <span
                   key={category.id}
-                  className="bg-muted px-3 py-1 rounded-full text-sm text-muted-foreground"
+                  className="bg-neutral-950 px-3 py-1 rounded-full text-sm"
                 >
                   {category.name}
                 </span>
@@ -99,7 +101,7 @@ export default function VideoDetailsRoute({
             </div>
 
             {/* Expandable Description */}
-            <div className="text-muted-foreground mt-4 relative">
+            <div className="text-neutral-300 mt-4 relative">
               <div
                 className={`whitespace-pre-wrap overflow-hidden transition-all duration-300 ${
                   expanded ? "max-h-full" : "max-h-[16rem]"
@@ -120,7 +122,7 @@ export default function VideoDetailsRoute({
         </div>
 
         {/* Reviews Section with Different Background */}
-        <div className="rounded-xl px-2 py-8 space-y-6">
+        <div className="py-8 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Reviews</h2>
             <Button asChild>
@@ -129,12 +131,17 @@ export default function VideoDetailsRoute({
           </div>
 
           {reviews.length === 0 && (
-            <p className="text-muted-foreground italic">No reviews yet. Be the first to add one!</p>
+            <p className="text-muted-foreground italic">
+              No reviews yet. Be the first to add one!
+            </p>
           )}
 
           <div className="space-y-6">
             {reviews.map((review) => (
-              <div key={review.id} className="rounded-lg p-4 bg-slate-600 shadow-sm">
+              <div
+                key={review.id}
+                className="rounded-lg p-4 bg-slate-600/50 shadow-sm"
+              >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
                     <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
