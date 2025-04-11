@@ -8,9 +8,11 @@ export function Navbar({ user }: { user: ResponseAuthMe | null }) {
     <div className="flex w-full items-center justify-center p-4 bg-neutral-950">
       <div className="max-w-screen-xl w-full flex justify-between">
         <Link to="/">
-          <h2 className="p-2 font-brand text-2xl tracking-tight text-white md:text-3xl">
-            🎞️Videoboxd
-          </h2>
+          <img
+            src="/images/videoboxd-logo.png"
+            alt="Videoboxd Logo"
+            className="h-9"
+          />
         </Link>
 
         {!user && (

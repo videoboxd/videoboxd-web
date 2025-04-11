@@ -5,7 +5,6 @@ import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import type { ResponseVideo } from "~/features/video/type";
 
 export default function VideoContent({ video }: { video: ResponseVideo }) {
-  console.log(video);
   return (
     <li className="bg-neutral-900/60 rounded-lg overflow-hidden m-2">
       <Link to={`/watch/${video.id}`} className="block">
