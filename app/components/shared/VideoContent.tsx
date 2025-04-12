@@ -5,6 +5,14 @@ import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import type { ResponseVideo } from "~/features/video/type";
 
 export default function VideoContent({ video }: { video: ResponseVideo }) {
+  const { reviews } = video;
+  const totalReview = reviews.length;
+  const averageRating =
+    reviews?.length > 0
+      ? reviews.map((review) => review.rating).reduce((a, b) => a + b, 0) /
+        reviews.length
+      : null;
+
   return (
     <li className="bg-neutral-900/60 rounded-lg overflow-hidden m-2">
       <Link to={`/watch/${video.id}`} className="block">
@@ -16,33 +24,50 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
           />
         )}
 
-        <div className="p-4 space-y-1">
-          <h3 className="font-bold text-2xl">{video.title}</h3>
-          <div className="flex justify-between items-center">
+        <div className="p-4 space-y-1 flex flex-col h-[300px]">
+          <div className="my-2 flex-[0_0_30%] overflow-hidden">
+            <h3
+              className="font-bold text-xl overflow-hidden text-ellipsis"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 3,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              {video.title}
+            </h3>
+          </div>
+
+          <div className="flex justify-between items-center flex-[0_0_15%]">
             <span className="flex items-center gap-2 text-[15px]">
               <Icon icon="fa-solid:comment-alt" className="text-[16px]" />
-              <span>
-                {video?.reviews.length > 0 ? video?.reviews.length : 0}
-              </span>
+              <span>{totalReview}</span>
             </span>
 
-            {/* <StarRatingBasic
-              value= {3}
-              maxStars={5}
-              readOnly={true}
-              className="p-2"
-            /> */}
+            {
+              averageRating ?
+              <StarRatingBasic
+                value={Math.floor(averageRating)}
+                maxStars={5}
+                readOnly={true}
+                className="p-2"
+              /> :
+              <p className="text-gray-300">Not yet rated</p>
+            }
           </div>
-          <p
-            className="text-[#888888] overflow-hidden text-ellipsis"
-            style={{
-              display: "-webkit-box",
-              WebkitLineClamp: 5,
-              WebkitBoxOrient: "vertical",
-            }}
-          >
-            {video.description}
-          </p>
+
+          <div className="flex-1">
+            <p
+              className="text-[#888888] overflow-hidden text-ellipsis"
+              style={{
+                display: "-webkit-box",
+                WebkitLineClamp: 5,
+                WebkitBoxOrient: "vertical",
+              }}
+            >
+              {video.description}
+            </p>
+          </div>
         </div>
       </Link>
     </li>
