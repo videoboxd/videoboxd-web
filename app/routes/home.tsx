@@ -5,6 +5,8 @@ import VideoContent from "~/components/shared/VideoContent";
 import type { ResponseVideos } from "~/features/video/type";
 import { serverApiUrl } from "~/lib/api-server";
 import type { Route } from "./+types/home";
+import { Button } from "~/components/ui/button";
+import { Link } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -13,17 +15,26 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+const DEFAULT_LIMIT = 8;
+
 export async function loader({ request }: Route.LoaderArgs) {
   const url = new URL(request.url);
-  const q = url.searchParams.get("q");
+  const q = url.searchParams.get("q") || "";
+  const limit = Number(url.searchParams.get("limit") || DEFAULT_LIMIT);
+
   const videos = await ky
-    .get(q ? `${serverApiUrl}/videos?q=${q}` : `${serverApiUrl}/videos`)
+    .get(
+      q
+        ? `${serverApiUrl}/videos?q=${q}&offset=0&limit=${limit}`
+        : `${serverApiUrl}/videos?offset=0&limit=${limit}`
+    )
     .json<ResponseVideos>();
-  return { videos, q };
+
+  return { videos, q, limit };
 }
 
 export default function Home({ loaderData }: Route.ComponentProps) {
-  const { videos, q } = loaderData;
+  const { videos, q, limit } = loaderData;
 
   useEffect(() => {
     const searchField = document.getElementById("q");
@@ -47,6 +58,23 @@ export default function Home({ loaderData }: Route.ComponentProps) {
                 <VideoContent key={video.id} video={video} />
               ))}
             </ul>
+
+            {videos.length === limit && (
+              <div className="mt-6 flex justify-center">
+                <Button asChild>
+                  <Link
+                    to={
+                      q
+                        ? `?q=${q}&limit=${limit + DEFAULT_LIMIT}`
+                        : `?limit=${limit + DEFAULT_LIMIT}`
+                    }
+                    preventScrollReset
+                  >
+                    Load More
+                  </Link>
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </section>
