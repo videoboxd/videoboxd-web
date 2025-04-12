@@ -11,6 +11,7 @@ import { serverApiUrl } from "~/lib/api-server";
 import { reviewFormSchema } from "~/lib/review";
 import { getSession } from "~/lib/sessions";
 import type { Route } from "./+types/review-video";
+import type { ResponseReviews } from "~/features/review/type";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -27,12 +28,25 @@ export function meta({ data }: Route.MetaArgs) {
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
+  const currentUserId = session.get("userId") || null;
   if (!session.has("userId")) return redirect("/login");
 
   const { videoId } = params;
   const video = await ky
     .get(`${serverApiUrl}/videos/${videoId}`)
     .json<ResponseVideoIdentifier>();
+
+  const reviews = await ky
+    .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
+    .json<ResponseReviews>();
+
+  const isUserReview = currentUserId
+    ? reviews.some((review) => review.userId === currentUserId)
+    : false;
+  
+  if (isUserReview) {
+    return redirect(`/watch/${videoId}`)
+  }
 
   return { video };
 }
