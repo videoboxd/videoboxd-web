@@ -1,6 +1,6 @@
 import type { Route } from "./+types/watch-video";
 import ky from "ky";
-import { Link } from "react-router";
+import { Form, Link, redirect } from "react-router";
 import { useState } from "react";
 import type { ResponseVideoIdentifier } from "~/features/video/type";
 import type { ResponseReviews } from "~/features/review/type";
@@ -8,6 +8,7 @@ import { serverApiUrl } from "~/lib/api-server";
 import { Button } from "~/components/ui/button";
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import { getSession } from "~/lib/sessions";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -19,8 +20,28 @@ export function meta({ data }: Route.MetaArgs) {
   ];
 }
 
+export async function action({ request }: Route.ActionArgs) {
+
+  const session = await getSession(request.headers.get("Cookie"));
+  const isAuthenticated = session.has("userId");
+
+  if (!isAuthenticated) {
+    return redirect("/login");  
+  }
+  const formData = await request.formData();
+
+  await ky
+    .delete(`${serverApiUrl}/reviews/${formData.get("videoId")}`, {
+      credentials: "include",
+      headers: { Authorization: `Bearer ${session.get("accessToken")}` },
+    })
+
+}
+
+
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
+  const userId = session.get("userId");
   const isAuthenticated = session.has("userId");
 
   const { videoId } = params;
@@ -33,13 +54,13 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
     .json<ResponseReviews>();
 
-  return { isAuthenticated, video, reviews };
+  return { isAuthenticated, video, reviews, userId };
 }
 
 export default function VideoDetailsRoute({
   loaderData,
 }: Route.ComponentProps) {
-  const { isAuthenticated, video, reviews } = loaderData;
+  const { isAuthenticated, video, reviews, userId } = loaderData;
   const [expanded, setExpanded] = useState(false);
 
   const toggleDescription = () => setExpanded(!expanded);
@@ -166,6 +187,24 @@ export default function VideoDetailsRoute({
                   />
                 </div>
                 <p className="whitespace-pre-wrap text-white">{review.text}</p>
+                {
+                    userId === review.userId && (
+                      <Form
+                        method="delete"
+                        className="flex justify-end mt-4"
+                      >
+                        <input type="hidden" name="videoId" value={review.id} />
+                        <button type="submit" value={review.id}>
+                          <Icon
+                            icon="mdi:trash-can-outline"
+                            className="text-white text-lg hover:text-red-500 transition-colors duration-150"
+                            width={24}
+                            height={24}
+                          />
+                        </button>
+                      </Form>
+                    )
+                  }
               </div>
             ))}
           </div>
