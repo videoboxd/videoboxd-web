@@ -21,6 +21,7 @@ export function meta({ data }: Route.MetaArgs) {
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
+  const currentUserId = session.get("userId") || null;
   const isAuthenticated = session.has("userId");
 
   const { videoId } = params;
@@ -33,13 +34,17 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
     .json<ResponseReviews>();
 
-  return { isAuthenticated, video, reviews };
+  const isUserReview = currentUserId
+  ? reviews.some((review) => review.userId === currentUserId)
+  : false;
+
+  return { isAuthenticated, isUserReview, video, reviews };
 }
 
 export default function VideoDetailsRoute({
   loaderData,
 }: Route.ComponentProps) {
-  const { isAuthenticated, video, reviews } = loaderData;
+  const { isAuthenticated, isUserReview, video, reviews } = loaderData;
   const [expanded, setExpanded] = useState(false);
 
   const toggleDescription = () => setExpanded(!expanded);
@@ -136,11 +141,14 @@ export default function VideoDetailsRoute({
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Reviews</h2>
             {isAuthenticated && (
-              <div>
-                <Button asChild>
-                  <Link to={`/review/${video.id}`}>Add Review</Link>
-                </Button>
-              </div>
+                isUserReview ?
+                <></>
+                :
+                <div>
+                  <Button asChild>
+                    <Link to={`/review/${video.id}`}>Add Review</Link>
+                  </Button>
+                </div>
             )}
           </div>
 
