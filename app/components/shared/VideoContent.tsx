@@ -5,6 +5,14 @@ import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import type { ResponseVideo } from "~/features/video/type";
 
 export default function VideoContent({ video }: { video: ResponseVideo }) {
+  const { reviews } = video;
+  const totalReview = reviews.length;
+  const averageRating =
+    reviews?.length > 0
+      ? reviews.map((review) => review.rating).reduce((a, b) => a + b, 0) /
+        reviews.length
+      : 0;
+
   return (
     <li className="bg-neutral-900/60 rounded-lg overflow-hidden m-2">
       <Link to={`/watch/${video.id}`} className="block">
@@ -21,17 +29,15 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
           <div className="flex justify-between items-center">
             <span className="flex items-center gap-2 text-[15px]">
               <Icon icon="fa-solid:comment-alt" className="text-[16px]" />
-              <span>
-                {video?.reviews.length > 0 ? video?.reviews.length : 0}
-              </span>
+              <span>{totalReview}</span>
             </span>
 
-            {/* <StarRatingBasic
-              value= {3}
+            <StarRatingBasic
+              value={Math.floor(averageRating)}
               maxStars={5}
               readOnly={true}
               className="p-2"
-            /> */}
+            />
           </div>
           <p
             className="text-[#888888] overflow-hidden text-ellipsis"
