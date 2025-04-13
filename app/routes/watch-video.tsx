@@ -47,9 +47,10 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .json<ResponseVideoIdentifier>();
 
   const reviews = await ky
-    .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
+    .get(`${serverApiUrl}/videos/${videoId}/reviews`)
     .json<ResponseReviews>();
 
+  // TODO: Fix typing
   const isUserReview = currentUserId
     ? reviews.some((review) => review.userId === currentUserId)
     : false;
