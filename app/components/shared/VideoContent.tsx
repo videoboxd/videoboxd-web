@@ -25,12 +25,16 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
         )}
 
         <div className="p-4 space-y-1 flex flex-col h-[300px]">
-          <div className="my-2 flex-[0_0_30%] overflow-hidden">
+          <div className="flex-[0_0_5%]">
+            <span className="text-[#888888]">{video.creator}</span>
+          </div>
+
+          <div className="my-2 flex-[0_0_20%] overflow-hidden">
             <h3
               className="font-bold text-xl overflow-hidden text-ellipsis"
               style={{
                 display: "-webkit-box",
-                WebkitLineClamp: 3,
+                WebkitLineClamp: 2,
                 WebkitBoxOrient: "vertical",
               }}
             >
@@ -38,7 +42,7 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
             </h3>
           </div>
 
-          <div className="flex justify-between items-center flex-[0_0_15%]">
+          <div className="flex justify-between items-center flex-[0_0_5%]">
             <span className="flex items-center gap-2 text-[15px]">
               <Icon icon="fa-solid:comment-alt" className="text-[16px]" />
               <span>{totalReview}</span>

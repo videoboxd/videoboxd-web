@@ -99,7 +99,12 @@ export default function VideoDetailsRoute({
           <div className="space-y-3 text-neutral-100">
             <h1 className="text-3xl font-bold">{video.title}</h1>
 
+            <div className="gap-2 text-neutral-200 text">
+              <span>{video.creator}</span>
+            </div>
+
             <div className="flex items-center gap-2 text-neutral-200 text-sm">
+              
               <span>{video.platform?.name}</span>
               <span>•</span>
               <span>
