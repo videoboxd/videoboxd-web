@@ -31,6 +31,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     .get(`${serverApiUrl}/users/${user?.id}`)
     .json<ResponseUsersIndetifier>();
 
+    console.log(userWithData)
+
   return { userWithData };
 }
 
@@ -44,6 +46,7 @@ export default function DashboardRoute({ loaderData }: Route.ComponentProps) {
           <p className="text-2xl font-semibold text-neutral-50 mb-10">
             Welcome to your dashboard
           </p>
+
 
           <div className="h-min flex  max-w-full">
             <span className="relative flex h-40 w-40 shrink-0 overflow-hidden rounded-xl bg-white/50">
@@ -71,7 +74,7 @@ export default function DashboardRoute({ loaderData }: Route.ComponentProps) {
               Your videos
             </p>
             <div className="mt-8">
-              <ul className="grid grid-cols-4 gap-4">
+              <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {userWithData?.videos.map((video) => (
                   <VideoContentUser key={video.id} video={video} />
                 ))}
