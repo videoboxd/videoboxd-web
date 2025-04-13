@@ -6,7 +6,9 @@ import type { ResponseVideos } from "~/features/video/type";
 import { serverApiUrl } from "~/lib/api-server";
 import type { Route } from "./+types/home";
 import { Button } from "~/components/ui/button";
-import { Link } from "react-router";
+import { Link, NavLink, useNavigation } from "react-router";
+import { LoaderIcon } from "lucide-react";
+import { cn } from "~/lib/utils";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -36,6 +38,9 @@ export async function loader({ request }: Route.LoaderArgs) {
 export default function Home({ loaderData }: Route.ComponentProps) {
   const { videos, q, limit } = loaderData;
 
+  const navigation = useNavigation();
+  const isLoadingMore = navigation.state !== "idle";
+
   useEffect(() => {
     const searchField = document.getElementById("q");
     if (searchField instanceof HTMLInputElement) {
@@ -61,17 +66,22 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
             {videos.length === limit && (
               <div className="mt-6 flex justify-center">
-                <Button asChild>
-                  <Link
+                <Button
+                  asChild
+                  disabled={isLoadingMore}
+                  className={cn(isLoadingMore && "opacity-50")}
+                >
+                  <NavLink
+                    preventScrollReset
                     to={
                       q
                         ? `?q=${q}&limit=${limit + DEFAULT_LIMIT}`
                         : `?limit=${limit + DEFAULT_LIMIT}`
                     }
-                    preventScrollReset
                   >
-                    Load More
-                  </Link>
+                    {isLoadingMore && <LoaderIcon className="animate-spin" />}
+                    <span>Load More</span>
+                  </NavLink>
                 </Button>
               </div>
             )}
