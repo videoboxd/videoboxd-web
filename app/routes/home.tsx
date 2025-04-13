@@ -58,7 +58,7 @@ export default function Home({ loaderData }: Route.ComponentProps) {
       <section className="">
         <div className="container mx-auto py-12">
           <div className="mt-8">
-            <ul className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <ul className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
               {videos.map((video) => (
                 <VideoContent key={video.id} video={video} />
               ))}

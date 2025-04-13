@@ -26,11 +26,11 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
 
         <div className="p-4 space-y-1 flex flex-col h-[300px]">
           <div className="flex-[0_0_5%]">
-            <span className="text-[#888888]">{video.creator}</span>
+            <span className="text-neutral-200">{video.creator}</span>
           </div>
 
           <div className="my-2 flex-[0_0_20%] overflow-hidden">
-            <h3
+            <h4
               className="font-bold text-xl overflow-hidden text-ellipsis"
               style={{
                 display: "-webkit-box",
@@ -39,7 +39,7 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
               }}
             >
               {video.title}
-            </h3>
+            </h4>
           </div>
 
           <div className="flex justify-between items-center flex-[0_0_5%]">
@@ -48,21 +48,21 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
               <span>{totalReview}</span>
             </span>
 
-            {
-              averageRating ?
+            {averageRating ? (
               <StarRatingBasic
                 value={Math.floor(averageRating)}
                 maxStars={5}
                 readOnly={true}
                 className="p-2"
-              /> :
+              />
+            ) : (
               <p className="text-gray-300">Not yet rated</p>
-            }
+            )}
           </div>
 
           <div className="flex-1">
             <p
-              className="text-[#888888] overflow-hidden text-ellipsis"
+              className="text-neutral-400 overflow-hidden text-ellipsis"
               style={{
                 display: "-webkit-box",
                 WebkitLineClamp: 5,
