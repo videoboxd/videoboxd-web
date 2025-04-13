@@ -37,7 +37,7 @@ export async function action({ request }: Route.ActionArgs) {
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  const currentUserId = session.get("userId") || null;
+  const userId = session.get("userId") || null;
   const isAuthenticated = session.has("userId");
 
   const { videoId } = params;
@@ -47,21 +47,25 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .json<ResponseVideoIdentifier>();
 
   const reviews = await ky
-    .get(`${serverApiUrl}/videos/${videoId}/reviews`)
+    .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
     .json<ResponseReviews>();
 
+  // const reviews = await ky
+  // .get(`${serverApiUrl}/videos/${videoId}/reviews`)
+  // .json<ResponseReviews>();
+
   // TODO: Fix typing
-  const isUserReview = currentUserId
-    ? reviews.some((review) => review.userId === currentUserId)
+  const isUserReview = userId
+    ? reviews.some((review) => review.userId === userId)
     : false;
 
-  return { isAuthenticated, isUserReview, video, reviews };
+  return { isAuthenticated, userId, isUserReview, video, reviews };
 }
 
 export default function VideoDetailsRoute({
   loaderData,
 }: Route.ComponentProps) {
-  const { isAuthenticated, isUserReview, video, reviews } = loaderData;
+  const { isAuthenticated, userId, isUserReview, video, reviews } = loaderData;
   const [expanded, setExpanded] = useState(false);
 
   const toggleDescription = () => setExpanded(!expanded);
@@ -140,6 +144,7 @@ export default function VideoDetailsRoute({
               >
                 {video.description}
               </div>
+              {/* TODO: Fix this typing */}
               {video.description?.split("\n").length > 10 && (
                 <button
                   onClick={toggleDescription}
