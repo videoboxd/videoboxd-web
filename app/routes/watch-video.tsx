@@ -21,27 +21,23 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function action({ request }: Route.ActionArgs) {
-
   const session = await getSession(request.headers.get("Cookie"));
   const isAuthenticated = session.has("userId");
 
   if (!isAuthenticated) {
-    return redirect("/login");  
+    return redirect("/login");
   }
   const formData = await request.formData();
 
-  await ky
-    .delete(`${serverApiUrl}/reviews/${formData.get("videoId")}`, {
-      credentials: "include",
-      headers: { Authorization: `Bearer ${session.get("accessToken")}` },
-    })
-
+  await ky.delete(`${serverApiUrl}/reviews/${formData.get("videoId")}`, {
+    credentials: "include",
+    headers: { Authorization: `Bearer ${session.get("accessToken")}` },
+  });
 }
-
 
 export async function loader({ request, params }: Route.LoaderArgs) {
   const session = await getSession(request.headers.get("Cookie"));
-  const userId = session.get("userId");
+  const currentUserId = session.get("userId") || null;
   const isAuthenticated = session.has("userId");
 
   const { videoId } = params;
@@ -51,16 +47,21 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .json<ResponseVideoIdentifier>();
 
   const reviews = await ky
-    .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
+    .get(`${serverApiUrl}/videos/${videoId}/reviews`)
     .json<ResponseReviews>();
 
-  return { isAuthenticated, video, reviews, userId };
+  // TODO: Fix typing
+  const isUserReview = currentUserId
+    ? reviews.some((review) => review.userId === currentUserId)
+    : false;
+
+  return { isAuthenticated, isUserReview, video, reviews };
 }
 
 export default function VideoDetailsRoute({
   loaderData,
 }: Route.ComponentProps) {
-  const { isAuthenticated, video, reviews, userId } = loaderData;
+  const { isAuthenticated, isUserReview, video, reviews } = loaderData;
   const [expanded, setExpanded] = useState(false);
 
   const toggleDescription = () => setExpanded(!expanded);
@@ -104,7 +105,6 @@ export default function VideoDetailsRoute({
             </div>
 
             <div className="flex items-center gap-2 text-neutral-200 text-sm">
-              
               <span>{video.platform?.name}</span>
               <span>•</span>
               <span>
@@ -156,13 +156,16 @@ export default function VideoDetailsRoute({
         <div className="py-8 space-y-6">
           <div className="flex items-center justify-between">
             <h2 className="text-xl font-semibold">Reviews</h2>
-            {isAuthenticated && (
-              <div>
-                <Button asChild>
-                  <Link to={`/review/${video.id}`}>Add Review</Link>
-                </Button>
-              </div>
-            )}
+            {isAuthenticated &&
+              (isUserReview ? (
+                <></>
+              ) : (
+                <div>
+                  <Button asChild>
+                    <Link to={`/review/${video.id}`}>Add Review</Link>
+                  </Button>
+                </div>
+              ))}
           </div>
 
           {reviews.length === 0 && (
@@ -192,24 +195,19 @@ export default function VideoDetailsRoute({
                   />
                 </div>
                 <p className="whitespace-pre-wrap text-white">{review.text}</p>
-                {
-                    userId === review.userId && (
-                      <Form
-                        method="delete"
-                        className="flex justify-end mt-4"
-                      >
-                        <input type="hidden" name="videoId" value={review.id} />
-                        <button type="submit" value={review.id}>
-                          <Icon
-                            icon="mdi:trash-can-outline"
-                            className="text-white text-lg hover:text-red-500 transition-colors duration-150"
-                            width={24}
-                            height={24}
-                          />
-                        </button>
-                      </Form>
-                    )
-                  }
+                {userId === review.userId && (
+                  <Form method="delete" className="flex justify-end mt-4">
+                    <input type="hidden" name="videoId" value={review.id} />
+                    <button type="submit" value={review.id}>
+                      <Icon
+                        icon="mdi:trash-can-outline"
+                        className="text-white text-lg hover:text-red-500 transition-colors duration-150"
+                        width={24}
+                        height={24}
+                      />
+                    </button>
+                  </Form>
+                )}
               </div>
             ))}
           </div>

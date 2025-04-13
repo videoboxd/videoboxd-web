@@ -25,9 +25,9 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-Sentry.init({
-  dsn: "https://b6688af1d43fd78a7f8126b26276e4d0@o4508993684504581.ingest.us.sentry.io/4508997486706688"
-});
+if (import.meta.env.PROD) {
+  Sentry.init({ dsn: process.env.SENTRY_DSN });
+}
 
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
