@@ -9,7 +9,7 @@ export default function VideoContent({ video }: { video: ResponseVideo }) {
   const totalReview = reviews.length;
   const averageRating =
     reviews?.length > 0
-      ? reviews.map((review) => review.rating).reduce((a, b) => a + b, 0) /
+      ? reviews.map((review) => review.rating).reduce((a: number, b: number) => a + b, 0) /
         reviews.length
       : null;
 

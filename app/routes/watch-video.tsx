@@ -70,6 +70,12 @@ export default function VideoDetailsRoute({
 
   const toggleDescription = () => setExpanded(!expanded);
 
+  const averageRating =
+  reviews?.length > 0
+    ? reviews.map((review) => review.rating).reduce((a: number, b: number) => a + b, 0) /
+      reviews.length
+    : null;
+
   return (
     <main className="flex items-center justify-center">
       <div className="w-full max-w-sm md:max-w-5xl p-3">
@@ -102,9 +108,17 @@ export default function VideoDetailsRoute({
 
           {/* Title & Metadata */}
           <div className="space-y-3 text-neutral-100">
-            <h1 className="text-3xl font-bold">{video.title}</h1>
+            <div className="flex items-center gap-2 text-neutral-200 text-sm justify-between flex-wrap md:flex-nowrap">
+              <h1 className="text-3xl font-bold">{video.title}</h1>
+              <StarRatingBasic
+                value={Math.floor(averageRating || 0)}
+                maxStars={5}
+                readOnly={true}
+                className="p-2"
+              />
+            </div>
 
-            <div className="gap-2 text-neutral-200 text">
+            <div className="gap-2 text-neutral-200 font-semibold">
               <span>{video.creator}</span>
             </div>
 
