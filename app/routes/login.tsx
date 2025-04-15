@@ -6,7 +6,7 @@ import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
 import { auth, UserLoginPayloadSchema } from "~/lib/auth";
-import { commitSession, getSession } from "~/lib/sessions";
+import { commitSession, destroySession, getSession } from "~/lib/sessions";
 import type { Route } from "./+types/login";
 
 export function meta({}: Route.MetaArgs) {
@@ -25,7 +25,7 @@ export async function loader({ request }: Route.LoaderArgs) {
 
   return data(
     { error: session.get("error") },
-    { headers: { "Set-Cookie": await commitSession(session) } }
+    { headers: { "Set-Cookie": await destroySession(session) } }
   );
 }
 
