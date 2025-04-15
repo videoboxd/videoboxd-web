@@ -9,6 +9,7 @@ import { Button } from "~/components/ui/button";
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import { getSession } from "~/lib/sessions";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import StarRating_Fractions from "~/components/commerce-ui/star-rating-fractions";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -71,10 +72,13 @@ export default function VideoDetailsRoute({
   const toggleDescription = () => setExpanded(!expanded);
 
   const averageRating =
-  reviews?.length > 0
-    ? reviews.map((review) => review.rating).reduce((a: number, b: number) => a + b, 0) /
-      reviews.length
-    : null;
+    reviews?.length > 0
+      ? reviews
+          .map((review) => review.rating)
+          .reduce((a: number, b: number) => a + b, 0) / reviews.length
+      : 0;
+  const roundedAverageRating =
+    averageRating && Number(averageRating.toFixed(1));
 
   return (
     <main className="flex items-center justify-center">
@@ -108,14 +112,16 @@ export default function VideoDetailsRoute({
 
           {/* Title & Metadata */}
           <div className="space-y-3 text-neutral-100">
-            <div className="flex items-center gap-2 text-neutral-200 text-sm justify-between flex-wrap md:flex-nowrap">
+            <div className="flex border-red-400 gap-2 text-neutral-200 text-sm justify-between flex-wrap md:flex-nowrap">
               <h1 className="text-3xl font-bold">{video.title}</h1>
-              <StarRatingBasic
-                value={Math.floor(averageRating || 0)}
-                maxStars={5}
-                readOnly={true}
-                className="p-2"
-              />
+              <div className="flex flex-col items-center justify-center gap-y-2">
+                <StarRating_Fractions
+                  value={roundedAverageRating}
+                  maxStars={5}
+                  readOnly={true}
+                />
+                <p className="self-end">({roundedAverageRating} / 5)</p>
+              </div>
             </div>
 
             <div className="gap-2 text-neutral-200 font-semibold">
@@ -158,8 +164,7 @@ export default function VideoDetailsRoute({
               >
                 {video.description}
               </div>
-              {/* TODO: Fix this typing */}
-              {video.description?.split("\n").length > 10 && (
+              {(video.description?.split("\n")?.length ?? 0) > 10 && (
                 <button
                   onClick={toggleDescription}
                   className="mt-2 text-blue-500 text-sm hover:underline"
