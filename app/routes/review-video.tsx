@@ -43,9 +43,9 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   const isUserReview = currentUserId
     ? reviews.some((review) => review.userId === currentUserId)
     : false;
-  
+
   if (isUserReview) {
-    return redirect(`/watch/${videoId}`)
+    return redirect(`/watch/${videoId}`);
   }
 
   return { video };
@@ -121,7 +121,7 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
                 <div className="flex flex-row justify-between mt-10">
                   <button
                     type="submit"
-                    className="bg-sky-400 rounded-full px-3 py-2 m-2 text-black font-medium"
+                    className="bg-sky-400 hover:bg-sky-500 rounded-full px-3 py-2 m-2 text-black font-medium"
                   >
                     Submit
                   </button>
