@@ -4,7 +4,7 @@ const teamData: TeamCardProps[] = [
   {
     name: "M Rifki Septiawan",
     role: "Backend Developer",
-    image: "/images/home-bg.jpg",
+    image: "/images/rifki.jpg",
     github: "https://github.com/kakarifki",
     linkedin: "https://linkedin.com/in/muhammadrifkiseptiawan11",
   },
