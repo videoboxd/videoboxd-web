@@ -82,11 +82,11 @@ export default function DashboardRoute({ loaderData }: Route.ComponentProps) {
           {/* Divider */}
           <div className="border-t border-gray-300 my-6"></div>
           <div>
-            <p className="text-2xl font-semibold text-neutral-50 mb-10">
+            <p className="text-2xl font-semibold text-neutral-50 mb-5 mt-5">
               Submitted videos
             </p>
-            <div className="mt-8">
-              <ul className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 bg-red-800">
+            <div className="mt-2">
+              <ul className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4">
                 {userWithData?.videos && userWithData.videos.length > 0 ? (
                   userWithData.videos.map((video) => (
                     <VideoContentUser key={video.id} video={video} />
