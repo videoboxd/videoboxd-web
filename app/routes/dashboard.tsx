@@ -85,20 +85,18 @@ export default function DashboardRoute({ loaderData }: Route.ComponentProps) {
             <p className="text-2xl font-semibold text-neutral-50 mb-10">
               Submitted videos
             </p>
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
-              {/* <ul className="grid grid-cols-1 md:grid-cols-3 gap-4"> */}
-              {userWithData?.videos && userWithData.videos.length > 0 ? (
-                userWithData.videos.map((video) => (
-                  <ul>
+            <div className="mt-8">
+              <ul className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 bg-red-800">
+                {userWithData?.videos && userWithData.videos.length > 0 ? (
+                  userWithData.videos.map((video) => (
                     <VideoContentUser key={video.id} video={video} />
-                  </ul>
-                ))
-              ) : (
-                <p className="text-center text-gray-500">
-                  No videos available.
-                </p>
-              )}
-              {/* </ul> */}
+                  ))
+                ) : (
+                  <p className="text-center text-gray-500">
+                    No videos available.
+                  </p>
+                )}
+              </ul>
             </div>
           </div>
         </div>
