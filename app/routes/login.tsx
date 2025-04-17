@@ -80,10 +80,10 @@ export default function LoginRoute({
       {error && (
         <div className="error">
           <div className="w-full max-w-sm md:max-w-sm md:-mt-14 mb-3">
-            <Alert variant="destructive">
+            <Alert className="bg-red-400 text-white">
               <AlertCircle className="h-4 w-4" />
               <AlertTitle>Login Failed</AlertTitle>
-              <AlertDescription>
+              <AlertDescription className="text-white">
                 Invalid username or password. Please try again.
               </AlertDescription>
             </Alert>
