@@ -36,7 +36,7 @@ export default function AboutRoute() {
             looking for ways to improve and welcome feedback from our community.
           </div>
 
-          <div className="grid grid-cols-5 sm:grid-cols-5 md:grid-cols-5 lg:grid-cols-5 gap-6 mt-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 mt-10">
             {teamData.map((team, index) => (
               <MemberCard key={index} team={team} />
             ))}
