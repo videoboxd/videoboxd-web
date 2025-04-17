@@ -25,7 +25,7 @@ const teamData: TeamCardProps[] = [
   {
     name: "Dery Nugroho Marjuki",
     role: "Frontend Developer",
-    image: "/images/home-bg.jpg",
+    image: "/images/dery.jpg",
     github: "https://github.com/derynm",
     linkedin: "https://linkedin.com/in/derynm",
   },
