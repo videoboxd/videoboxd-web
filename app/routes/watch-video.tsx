@@ -10,6 +10,8 @@ import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import { getSession } from "~/lib/sessions";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import StarRating_Fractions from "~/components/commerce-ui/star-rating-fractions";
+import { Avatar, AvatarFallback, AvatarImage } from "~/components/ui/avatar";
+import VideoPlayer from "~/components/shared/VideoPlayer";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -104,17 +106,15 @@ export default function VideoDetailsRoute({
           </div>
 
           {/* Thumbnail */}
-          <img
-            src={video.thumbnailUrl || undefined}
-            alt={video.title}
-            className="w-full object-cover rounded-xl shadow-md"
-          />
+          <div className="aspect-[16/9] w-full object-cover rounded-xl shadow-md overflow-hidden">
+            <VideoPlayer url={video.originalUrl} />
+          </div>
 
           {/* Title & Metadata */}
           <div className="space-y-3 text-neutral-100">
             <div className="flex border-red-400 gap-2 text-neutral-200 text-sm justify-between flex-wrap md:flex-nowrap">
               <h1 className="text-3xl font-bold">{video.title}</h1>
-              <div className="flex flex-col items-center justify-center gap-y-2">
+              <div className="flex md:flex-col gap-x-3 md:gap-x-0 items-center justify-center gap-y-2">
                 <StarRating_Fractions
                   value={roundedAverageRating}
                   maxStars={5}
@@ -206,9 +206,12 @@ export default function VideoDetailsRoute({
               >
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-3">
-                    <div className="w-9 h-9 rounded-full bg-muted flex items-center justify-center text-sm font-bold text-muted-foreground">
-                      {review.user.username[0].toUpperCase()}
-                    </div>
+                    <Avatar>
+                      <AvatarImage src={review.user.avatarUrl as string} />
+                      <AvatarFallback>
+                        {review.user.username[0].toUpperCase()}
+                      </AvatarFallback>
+                    </Avatar>
                     <span className="font-medium">{review.user.username}</span>
                   </div>
                   <StarRatingBasic
