@@ -1,12 +1,16 @@
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@radix-ui/react-label";
-import { Form, Link, redirect } from "react-router";
+import { data, Form, Link, redirect } from "react-router";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { auth, UserRegisterPayloadSchema } from "~/lib/auth";
 import type { Route } from "./+types/register";
+import { commitSession, destroySession, getSession } from "~/lib/sessions";
+import { HTTPError } from "ky";
+import { AlertCircle } from "lucide-react";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -15,20 +19,54 @@ export function meta({}: Route.MetaArgs) {
   ];
 }
 
+export async function loader({ request }: Route.LoaderArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
+  return data(
+    { error: session.get("error") },
+    { headers: { "Set-Cookie": await destroySession(session) } }
+  );
+}
+
 export async function action({ request }: Route.ClientActionArgs) {
+  const session = await getSession(request.headers.get("Cookie"));
+
   const formData = await request.formData();
   const submission = parseWithZod(formData, {
     schema: UserRegisterPayloadSchema,
   });
   if (submission.status !== "success") return submission.reply();
 
-  const response = await auth.register(submission.value);
-  if (!response) return { error: "Registration failed. Please try again." };
+  try {
+    const response = await auth.register(submission.value);
 
-  return redirect("/login");
+    return redirect("/login");
+  } catch (error: unknown) {
+    let message = "Register failed";
+
+    // handle error HTTP dari ky
+    if (error instanceof HTTPError) {
+      const res = await error.response.json();
+      message = res.message || message;
+    } else if (error instanceof Error) {
+      message = error.message;
+    }
+    session.flash("error", message);
+
+    return redirect("/register", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
+  }
 }
 
-export default function RegisterRoute({ actionData }: Route.ComponentProps) {
+export default function RegisterRoute({
+  actionData,
+  loaderData,
+}: Route.ComponentProps) {
+  const { error } = loaderData;
+
   const [form, fields] = useForm({
     shouldValidate: "onBlur",
     // lastResult: actionData,
@@ -39,6 +77,15 @@ export default function RegisterRoute({ actionData }: Route.ComponentProps) {
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
+      {error && (
+        <div className="w-full max-w-sm md:max-w-sm md:-mt-7 mb-3">
+          <Alert variant="destructive">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Register Failed</AlertTitle>
+            <AlertDescription>{error}</AlertDescription>
+          </Alert>
+        </div>
+      )}
       <div className="w-full max-w-sm md:max-w-sm">
         <div className="flex flex-col gap-2">
           <Card className="overflow-hidden">
