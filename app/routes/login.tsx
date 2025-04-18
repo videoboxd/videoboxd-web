@@ -78,16 +78,14 @@ export default function LoginRoute({
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
       {error && (
-        <div className="error">
-          <div className="w-full max-w-sm md:max-w-sm md:-mt-14 mb-3">
-            <Alert className="bg-red-400 text-white">
-              <AlertCircle className="h-4 w-4" />
-              <AlertTitle>Login Failed</AlertTitle>
-              <AlertDescription className="text-white">
-                Invalid username or password. Please try again.
-              </AlertDescription>
-            </Alert>
-          </div>
+        <div className="w-full max-w-sm md:max-w-sm md:-mt-14 mb-3">
+          <Alert className="bg-red-400 text-white">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Login Failed</AlertTitle>
+            <AlertDescription className="text-white">
+              Invalid username or password. Please try again.
+            </AlertDescription>
+          </Alert>
         </div>
       )}
 
