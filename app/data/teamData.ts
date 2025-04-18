@@ -34,7 +34,14 @@ const teamData: TeamCardProps[] = [
     role: "Frontend Developer",
     image: "/images/irpan.jpg",
     github: "https://github.com/padillahirpan",
-    linkedin: "https://linkedin.com/in/leeobby",
+    linkedin: "https://linkedin.com/in/padillahirpan1396",
+  },
+  {
+    name: "M Haidar Hanif",
+    role: "Project Manager",
+    image: "/images/haidar.jpg",
+    github: "https://github.com/mhaidarhanif",
+    linkedin: "https://linkedin.com/in/mhaidarhanif",
   },
 ];
 
