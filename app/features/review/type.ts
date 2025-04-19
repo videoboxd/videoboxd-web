@@ -7,3 +7,7 @@ export type ResponseReviews =
 // /videos/:videoId/reviews
 
 export type ResponseReview = ElementType<ResponseReviews>;
+
+
+export type ResponseReviewsIdentifier =
+  paths["/reviews/{identifier}"]["get"]["responses"][200]["content"]["application/json"];

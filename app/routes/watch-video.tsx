@@ -56,6 +56,7 @@ export async function loader({ request, params }: Route.LoaderArgs) {
   // const reviews = await ky
   // .get(`${serverApiUrl}/videos/${videoId}/reviews`)
   // .json<ResponseReviews>();
+  console.log(reviews)
 
   // TODO: Fix typing
   const isUserReview = userId
@@ -223,8 +224,16 @@ export default function VideoDetailsRoute({
                 </div>
                 <p className="whitespace-pre-wrap text-white">{review.text}</p>
                 {userId === review.userId && (
-                  <Form method="delete" className="flex justify-end mt-4">
+                  <Form method="delete" className="flex justify-end mt-4 gap-2.5">
                     <input type="hidden" name="videoId" value={review.id} />
+                    <Link to={`/review/${video.id}?review=${review.id}`}>
+                      <Icon
+                        icon="mdi:edit-box"
+                        className="text-white text-lg hover:text-blue-500 transition-colors duration-150"
+                        width={24}
+                        height={24}
+                      />
+                    </Link>
                     <button type="submit" value={review.id}>
                       <Icon
                         icon="mdi:trash-can-outline"
@@ -235,6 +244,7 @@ export default function VideoDetailsRoute({
                     </button>
                   </Form>
                 )}
+
               </div>
             ))}
           </div>

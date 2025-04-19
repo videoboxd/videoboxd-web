@@ -1,7 +1,7 @@
 import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@radix-ui/react-label";
 import ky from "ky";
-import { useState } from "react";
+import { use, useEffect, useState } from "react";
 import { Form, redirect, useNavigate } from "react-router";
 import StarRatingBasic from "~/components/commerce-ui/star-rating-basic";
 import { Card } from "~/components/ui/card";
@@ -11,7 +11,7 @@ import { serverApiUrl } from "~/lib/api-server";
 import { reviewFormSchema } from "~/lib/review";
 import { getSession } from "~/lib/sessions";
 import type { Route } from "./+types/review-video";
-import type { ResponseReviews } from "~/features/review/type";
+import type { ResponseReviews, ResponseReviewsIdentifier } from "~/features/review/type";
 
 export function meta({ data }: Route.MetaArgs) {
   return [
@@ -27,8 +27,12 @@ export function meta({ data }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: Route.LoaderArgs) {
+  const url = new URL(request.url);
+
   const session = await getSession(request.headers.get("Cookie"));
   const currentUserId = session.get("userId") || null;
+  const reviewId = url.searchParams.get("review") || null;
+
   if (!session.has("userId")) return redirect("/login");
 
   const { videoId } = params;
@@ -40,19 +44,31 @@ export async function loader({ request, params }: Route.LoaderArgs) {
     .get(`${serverApiUrl}/reviews?videoId=${video.id}`)
     .json<ResponseReviews>();
 
+  let reviewedData = null;
+
   const isUserReview = currentUserId
     ? reviews.some((review) => review.userId === currentUserId)
     : false;
 
-  if (isUserReview) {
+  if (isUserReview && !reviewId) {
     return redirect(`/watch/${videoId}`);
   }
 
-  return { video };
+  if (reviewId) {
+    reviewedData = await ky
+      .get(`${serverApiUrl}/reviews/${reviewId}`)
+      .json<ResponseReviewsIdentifier>();
+  }
+
+  console.log("reviewedData", reviewedData);
+
+  return { video, reviewedData };
 }
 
 export async function action({ params, request }: Route.ActionArgs) {
   const session = await getSession(request.headers.get("Cookie"));
+
+  console.log(request.method);
 
   if (!session.has("userId")) {
     return redirect("/login");
@@ -66,21 +82,47 @@ export async function action({ params, request }: Route.ActionArgs) {
   if (review.status !== "success") return { error: "Failed to add new review" };
   const { videoId } = params;
 
-  const submittedReview = await ky
-    .post(`${serverApiUrl}/reviews/${videoId}`, {
-      credentials: "include",
-      headers: { Authorization: `Bearer ${session.get("accessToken")}` },
-      json: review.value,
-    })
-    .json();
+  if (request.method === 'POST') {
+    const submittedReview = await ky
+      .post(`${serverApiUrl}/reviews/${videoId}`, {
+        credentials: "include",
+        headers: { Authorization: `Bearer ${session.get("accessToken")}` },
+        json: review.value,
+      })
+      .json();
+  }
+
+  if (request.method === 'PATCH') {
+    const reviewId = formData.get("reviewId");
+
+    console.log(review.value)
+
+    await ky
+      .patch(`${serverApiUrl}/reviews/${reviewId}`, {
+        credentials: "include",
+        headers: { Authorization: `Bearer ${session.get("accessToken")}` },
+        json: review.value,
+      })
+      .json();
+  }
 
   return redirect(`/watch/${videoId}`);
 }
 
 export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
-  const { video } = loaderData;
+  const { video, reviewedData } = loaderData;
   const navigate = useNavigate();
   const [rating, setRating] = useState(0);
+
+  // if ( reviewedData && reviewedData.content.rating) {
+  //   setRating(reviewedData.content.rating);
+  // }
+
+  useEffect(() => {
+    if (reviewedData && reviewedData.content.rating) {
+      setRating(reviewedData.content.rating);
+    }
+  }, []);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
@@ -98,11 +140,14 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
               />
               <h1 className="p-2 text-xl font-bold">{video.title}</h1>
 
-              <Form method="post">
+              <Form method={reviewedData ? "patch" : "post"}>
+                <input type="hidden" name="reviewId" value={reviewedData?.content?.id} />
+
                 <div className="flex flex-col">
                   <Label className="m-2">Review</Label>
                   <TextArea
                     name="text"
+                    defaultValue= {reviewedData?.content?.text || ""}
                     placeholder="Write your review..."
                     className="bg-white rounded-md m-2 py-1 px-3 placeholder:text-gray-500 text-slate-800"
                   />
