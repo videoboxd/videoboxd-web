@@ -1,7 +1,9 @@
 import { useForm } from "@conform-to/react";
 import { parseWithZod } from "@conform-to/zod";
 import { Label } from "@radix-ui/react-label";
+import { AlertCircle } from "lucide-react";
 import { data, Form, Link, redirect } from "react-router";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
 import { Button } from "~/components/ui/button";
 import { Card, CardContent } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
@@ -38,23 +40,25 @@ export async function action({ request }: Route.ClientActionArgs) {
   });
   if (submission.status !== "success") return submission.reply();
 
-  const user = await auth.login(submission.value);
+  try {
+    const user = await auth.login(submission.value);
 
-  if (!user) {
-    session.flash("error", "Invalid username/password");
-    // Redirect back to the login page with errors.
-    return redirect("/login", {
+    session.set("userId", user.id);
+    session.set("accessToken", user.accessToken);
+    session.set("refreshToken", user.refreshToken);
+
+    return redirect("/dashboard", {
       headers: { "Set-Cookie": await commitSession(session) },
     });
+  } catch (error: unknown) {
+    session.flash("error", "Invalid username/password");
+
+    return redirect("/login", {
+      headers: {
+        "Set-Cookie": await commitSession(session),
+      },
+    });
   }
-
-  session.set("userId", user.id);
-  session.set("accessToken", user.accessToken);
-  session.set("refreshToken", user.refreshToken);
-
-  return redirect("/dashboard", {
-    headers: { "Set-Cookie": await commitSession(session) },
-  });
 }
 
 export default function LoginRoute({
@@ -73,7 +77,17 @@ export default function LoginRoute({
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center p-6 md:p-10">
-      {error ? <div className="error">{error}</div> : null}
+      {error && (
+        <div className="w-full max-w-sm md:max-w-sm md:-mt-14 mb-3">
+          <Alert className="bg-red-400 text-white">
+            <AlertCircle className="h-4 w-4" />
+            <AlertTitle>Login Failed</AlertTitle>
+            <AlertDescription className="text-white">
+              Invalid username or password. Please try again.
+            </AlertDescription>
+          </Alert>
+        </div>
+      )}
 
       <div className="w-full max-w-sm md:max-w-sm">
         <div className="flex flex-col gap-6">
