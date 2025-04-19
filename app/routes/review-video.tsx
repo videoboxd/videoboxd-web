@@ -130,7 +130,7 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
         <Card className="bg-neutral-900/60">
           <div className="py-3 px-6">
             <div className="flex flex-row justify-between mb-4">
-              <h1 className="text-2xl font-bold">Submit Review</h1>
+              <h1 className="text-2xl font-bold">{reviewedData ? "Edit" : "Submit"} Review</h1>
             </div>
             <div className="grid grid-cols-1">
               <img
@@ -168,7 +168,7 @@ export default function NewReviewRoute({ loaderData }: Route.ComponentProps) {
                     type="submit"
                     className="bg-sky-400 hover:bg-sky-500 rounded-full px-3 py-2 m-2 text-black font-medium"
                   >
-                    Submit
+                    {reviewedData ? "Edit" : "Submit"}
                   </button>
                   <button
                     type="button"
