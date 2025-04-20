@@ -50,8 +50,10 @@ export default function Home({ loaderData }: Route.ComponentProps) {
 
   return (
     <div>
-      <section className="flex flex-col items-center justify-center font-bold text-xl px-8 h-[80dvh] bg-[url('/images/home-bg.jpg')] bg-cover bg-center">
-        <h1 className="text-center leading-20">Rate interesting videos</h1>
+      <section className="flex flex-col gap-10 items-center justify-center font-bold text-xl px-8 h-[80dvh] bg-[url('/images/home-bg.jpg')] bg-cover bg-center">
+        <h1 className="text-3xl sm:text-5xl text-center text-balance">
+          Explore and rate interesting videos
+        </h1>
         <SearchForm searchQuery={q || ""} />
       </section>
 
